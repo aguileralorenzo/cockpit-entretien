@@ -91,7 +91,7 @@ const faux = (dataset, remonte = {}) => ({
 
 console.log('Rendu des onglets :');
 verifier('reste'); // onglet par defaut jusqu au 29/09
-for (const onglet of ['tableau', 'actions', 'entrainement', 'competences', 'realisations', 'engagements', 'remuneration', 'offres', 'cible', 'notes', 'discussions', 'inbox']) {
+for (const onglet of ['tableau', 'actions', 'entrainement', 'repetitions', 'competences', 'realisations', 'engagements', 'remuneration', 'offres', 'cible', 'notes', 'discussions', 'inbox']) {
   await tabs.declencher('click', faux({ onglet }));
   verifier(onglet);
 }

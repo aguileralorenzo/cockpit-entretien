@@ -23,6 +23,7 @@ const state = {
   offres: null,
   formulaire: null,
   discussions: null,
+  repetitions: null,
   paie: null,
   entrainement: null,
   exercices: null,
@@ -32,6 +33,7 @@ const state = {
 };
 
 const ui = {
+  repetitionOuverte: null, // identifiant de la repetition affichee dans l'onglet Repetitions
   onglet: 'reste', // jusqu'au 29/09, remettre 'tableau' ensuite
   filtreStatut: 'ouvertes',
   cibleAffichee: null, // renseigne apres chargement depuis cible.cible_active
@@ -55,6 +57,7 @@ const ONGLETS = [
   { id: 'tableau', libelle: 'Tableau de bord', groupe: 'Piloter' },
   { id: 'actions', libelle: "Plan d'action", groupe: 'Piloter' },
   { id: 'entrainement', libelle: 'Entraînement', groupe: 'Piloter' },
+  { id: 'repetitions', libelle: 'Répétitions', groupe: 'Piloter' },
   { id: 'competences', libelle: 'Compétences', groupe: 'Mon dossier' },
   { id: 'realisations', libelle: 'Réalisations', groupe: 'Mon dossier' },
   { id: 'engagements', libelle: 'Engagements', groupe: 'Mon dossier' },
@@ -76,6 +79,14 @@ const STATUTS = {
 const HORIZONS = { semaine: 'Cette semaine', mois: 'Ce mois-ci', trimestre: 'Ce trimestre' };
 
 /* ---------------------------------------------------------------- outils */
+
+// Une date ISO en clair, pour les en-tetes de repetition.
+const MOIS_LONG = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const moisJour = (iso) => {
+  if (!iso) return 'date inconnue';
+  const [a, m, j] = String(iso).split('-').map(Number);
+  return Number.isFinite(j) ? `${j} ${MOIS_LONG[m - 1]} ${a}` : String(iso);
+};
 
 const esc = (v) =>
   String(v ?? '').replace(/[&<>"']/g, (c) =>
@@ -1884,6 +1895,83 @@ function vueRemuneration() {
     </div>`;
 }
 
+/* ------------------------------------------------- repetitions */
+
+// Le rejeu d'une seance de mise en situation. Ce qui compte n'est pas le
+// direct, c'est la relecture : une faute qu'on retrouve d'une seance a l'autre
+// n'est pas une inattention, c'est un reflexe a defaire, et on ne le voit
+// qu'en comparant.
+//
+// Les corrections sont dans des <details> natifs, sans une ligne de script :
+// elles se deplient au clavier, elles s'impriment, et une repetition longue
+// reste lisible tant qu'on ne les ouvre pas toutes.
+
+function vueRepetitions() {
+  const liste = [...(state.repetitions?.repetitions ?? [])].reverse();
+
+  if (!liste.length) {
+    return `<div class="empty"><strong>Aucune répétition enregistrée.</strong><br>
+      Lance <code>/train</code> dans Claude Code pour jouer l'entretien avec ton manager.
+      À la fin, dis <code>débrief</code> : la séance est notée et vient s'archiver ici, relisible.</div>`;
+  }
+
+  const ouvert = ui.repetitionOuverte ?? liste[0].id;
+
+  const onglets = liste
+    .map((r) => `<button type="button" class="filtre${r.id === ouvert ? ' actif' : ''}" data-role="repetition" data-id="${esc(r.id)}" aria-pressed="${r.id === ouvert}">
+        ${esc(moisJour(r.date))}${r.note != null ? ` · ${dec(r.note, 1)}` : ''}
+      </button>`)
+    .join('');
+
+  const r = liste.find((x) => x.id === ouvert) ?? liste[0];
+
+  const echanges = (r.echanges ?? [])
+    .map((e) => {
+      if (e.qui === 'correction') {
+        const lignes = [
+          e.ton ? `<dt>Ton</dt><dd>${esc(e.ton)}</dd>` : '',
+          e.formulation ? `<dt>Formulation</dt><dd>${esc(e.formulation)}</dd>` : '',
+          e.risque ? `<dt>Risque</dt><dd>${esc(e.risque)}</dd>` : '',
+          e.mieux ? `<dt>Mieux</dt><dd class="mieux">${esc(e.mieux)}</dd>` : '',
+        ].join('');
+        return `<details class="correction">
+          <summary>Correction${e.faute ? ` <span class="faute">faute ${esc(e.faute)}</span>` : ''}</summary>
+          <dl class="kv">${lignes}</dl>
+        </details>`;
+      }
+      const qui = e.qui === 'moi' ? 'moi' : 'manager';
+      const nom = qui === 'moi' ? 'Toi' : dit.manager();
+      return `<div class="echange ${qui}">
+        <span class="echange-qui">${esc(nom)}</span>
+        <p>${esc(e.texte ?? '')}</p>
+      </div>`;
+    })
+    .join('');
+
+  const corrections = (r.echanges ?? []).filter((e) => e.qui === 'correction').length;
+  const repliques = (r.echanges ?? []).filter((e) => e.qui === 'moi').length;
+
+  return `
+    <div class="card">
+      <header>
+        <h2>Répétitions</h2>
+        <span class="hint">${liste.length} séance${liste.length > 1 ? 's' : ''} enregistrée${liste.length > 1 ? 's' : ''}</span>
+      </header>
+      <div class="filtres" role="group" aria-label="Choisir une répétition">${onglets}</div>
+    </div>
+
+    <div class="card">
+      <header>
+        <h2>${esc(moisJour(r.date))}</h2>
+        <span class="hint">difficulté ${esc(r.difficulte ?? 'non précisée')}${r.note != null ? ` · ${dec(r.note, 1)} sur 20` : ''}</span>
+      </header>
+      <p class="hint">${repliques} réplique${repliques > 1 ? 's' : ''} de ta part, ${corrections} correction${corrections > 1 ? 's' : ''}.
+        ${r.corrige_en_direct === false ? 'Les corrections avaient été gardées pour le débrief.' : ''}</p>
+      <div class="rejeu">${echanges}</div>
+      ${r.debrief ? `<p class="hint" style="margin-top:16px">Le débrief complet de cette séance est dans <code>${esc(r.debrief)}</code>.</p>` : ''}
+    </div>`;
+}
+
 /* --------------------------------------------------------------- rendu */
 
 function rendre() {
@@ -1897,6 +1985,7 @@ function rendre() {
     remuneration: vueRemuneration,
     offres: vueOffres,
     entrainement: vueReflexes,
+    repetitions: vueRepetitions,
     cible: vueCible,
     notes: vueNotes,
     discussions: vueDiscussions,
@@ -1954,6 +2043,13 @@ document.getElementById('view').addEventListener('click', async (e) => {
   const cible = e.target.closest('[data-role]');
   if (!cible) return;
   const role = cible.dataset.role;
+
+  // Choix de la repetition a rejouer. Aucune ecriture, on change d affichage.
+  if (role === 'repetition') {
+    ui.repetitionOuverte = cible.dataset.id;
+    rendre();
+    return;
+  }
 
   // On enregistre la reponse puis on rend : le meme rendu revele le motif sous
   // l'option choisie et sous la bonne, sans en dire plus sur les autres.
@@ -2128,14 +2224,14 @@ document.getElementById('view').addEventListener('submit', async (e) => {
 
 async function demarrer() {
   try {
-    const [config, profil, cible, actions, competences, realisations, engagements, offres, formulaire, entrainement, exercices, discussions, paie] =
+    const [config, profil, cible, actions, competences, realisations, engagements, offres, formulaire, entrainement, exercices, discussions, paie, repetitions] =
       await Promise.all(
-        ['config', 'profil', 'cible', 'actions', 'competences', 'realisations', 'engagements', 'offres', 'formulaire', 'entrainement', 'exercices', 'discussions', 'paie'].map(
+        ['config', 'profil', 'cible', 'actions', 'competences', 'realisations', 'engagements', 'offres', 'formulaire', 'entrainement', 'exercices', 'discussions', 'paie', 'repetitions'].map(
           charger,
         ),
       );
     Object.assign(state, {
-      config, profil, cible, actions, competences, realisations, engagements, offres, formulaire, entrainement, exercices, discussions, paie,
+      config, profil, cible, actions, competences, realisations, engagements, offres, formulaire, entrainement, exercices, discussions, paie, repetitions,
     });
 
     try {

@@ -123,6 +123,20 @@ Reste en rôle jusqu'à **pause**, **stop** ou **débrief**.
 
 ---
 
+## Enregistrer la séance, au fil de l'eau
+
+**Tu écris la transcription dans `data/repetitions.json`.** Le terminal efface, l'onglet Répétitions garde, et c'est là que la valeur se trouve : une faute qu'on retrouve d'une séance à l'autre n'est pas une inattention, et on ne le voit qu'en comparant.
+
+Une entrée par séance, avec ses `echanges` dans l'ordre : chaque réplique du manager, chaque réponse **telle qu'elle a été écrite, sans la corriger**, et la correction qui suit. `data/repetitions.json` porte sa forme exacte dans son champ `_forme`.
+
+**Écris à la fin de la séance**, au débrief. Si l'utilisateur dit **pause** ou **stop**, écris quand même ce qui a été joué : une séance interrompue vaut mieux qu'une séance perdue.
+
+Si les corrections ont été gardées pour la fin, mets `corrige_en_direct` à `false` et place quand même les corrections après chaque réplique concernée. C'est à la relecture qu'elles servent.
+
+Ne recopie aucun montant dans la transcription qui ne soit pas dans `data/negociation.json`, y compris dans tes reformulations.
+
+---
+
 ## Le débrief
 
 Ce n'est pas un message de terminal, c'est **une page**. L'utilisateur la relit sur son téléphone le matin de l'entretien, et un terminal n'est pas un support de relecture.
@@ -132,6 +146,8 @@ Ce n'est pas un message de terminal, c'est **une page**. L'utilisateur la relit 
 **Deux.** `node outils/faire-debrief.mjs export/debrief-<date>.json` produit la page. Le générateur calcule la note et place les barres, il ne juge rien.
 
 **Trois.** `node outils/verif-debrief.mjs export/debrief-<date>.html`, puis publie **seulement si le contrôle est vert**. Donne le lien et résume en quelques lignes, sans recopier la page.
+
+**Quatre.** Renseigne `note` et `debrief` sur l'entrée de `data/repetitions.json`, pour que l'onglet Répétitions affiche la note et pointe vers la page.
 
 ### Le barème
 

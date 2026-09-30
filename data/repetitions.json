@@ -1,0 +1,27 @@
+{
+  "_doc": "Les repetitions jouees avec le skill train, conservees pour etre relues. Le terminal efface, cet onglet garde. Une repetition porte ses echanges dans l'ordre : chaque replique du manager, chaque reponse, et la correction qui suit. Le skill train ecrit ici a la fin de la seance, ou sur pause si elle est interrompue. AUCUN appel reseau n'est fait pour afficher tout cela, c'est du texte deja produit.",
+
+  "_forme": {
+    "_doc": "La forme attendue d'une entree, pour reference. Ne pas remplir a la main, le skill s'en charge.",
+    "id": "identifiant unique, par exemple r2026-09-30-a",
+    "date": "AAAA-MM-JJ",
+    "difficulte": "conciliant, realiste ou difficile",
+    "note": "la note sur 20 si la seance a ete debriefee, sinon null",
+    "debrief": "chemin de la page de debrief si elle existe, sinon null",
+    "corrige_en_direct": "true si les corrections etaient affichees pendant la seance, false si tout a ete garde pour le debrief",
+    "echanges": [
+      { "qui": "manager", "texte": "la replique du manager" },
+      { "qui": "moi", "texte": "la reponse de l'utilisateur, telle qu'elle a ete ecrite" },
+      {
+        "qui": "correction",
+        "ton": "comment ca sonne a l'oreille du manager",
+        "formulation": "ce qui est mal dit, en citant le mot en cause",
+        "risque": "la prise donnee, ou null si la replique est solide",
+        "mieux": "la meme chose mieux dite, jamais plus longue que l'originale",
+        "faute": "le numero de la faute si elle en porte une, sinon null"
+      }
+    ]
+  },
+
+  "repetitions": []
+}

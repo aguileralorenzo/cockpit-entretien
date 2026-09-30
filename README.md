@@ -65,6 +65,7 @@ Les données vivent dans `data/*.json`, et c'est la **source de vérité unique*
 | `data/entrainement.json` | Vos scores, écrits par l'application |
 | `data/formulaire.json` | Les textes de votre formulaire d'entretien, d'un cycle à l'autre |
 | `data/discussions.json` | Les analyses produites au fil des pièces déposées |
+| `data/repetitions.json` | Vos répétitions, rejouables dans l'onglet Répétitions |
 
 ---
 
@@ -85,6 +86,14 @@ L'onglet **Entraînement** est un exercice à choix. Une réplique du manager, t
 **Aucun modèle n'intervient.** Tout est écrit dans `data/exercices.json`, donc rien ne peut inventer un montant ni vous conseiller une faute. L'onglet fonctionne sans réseau et sans rien d'installé.
 
 Le bilan compare votre série à la précédente et signale **ce qui revient d'une série à l'autre**. Une faute présente sur deux séries n'est pas une inattention, c'est un réflexe à défaire.
+
+## Le rejeu des répétitions
+
+Une séance de `/train` se joue dans le terminal, qui efface. L'onglet **Répétitions** la garde et la rejoue en conversation, réplique par réplique, avec la correction dépliable sous chacune de vos réponses.
+
+Ce qui compte n'est pas le direct, c'est la relecture. Une faute qu'on retrouve d'une séance à l'autre n'est pas une inattention, et on ne le voit qu'en comparant.
+
+**Aucun appel réseau** n'est fait pour cet affichage, c'est du texte déjà produit. Le moteur reste votre session Claude Code.
 
 ---
 
