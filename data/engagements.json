@@ -1,0 +1,9 @@
+{
+  "_doc": "Les promesses recues et leur devenir. C est le fichier qui evite de recommencer la meme conversation chaque annee. Un engagement sans echeance n est pas un engagement, c est une intention, et il faut l ecrire aussi.",
+  "engagements": [],
+  "_a_verifier_a_chaque_cycle": [
+    "Chaque engagement en_attente a-t-il une echeance ?",
+    "Chaque engagement dont l'echeance est passee a-t-il ete clos, tenu ou non_tenu ?",
+    "Chaque engagement non_tenu a-t-il ete repose au cycle suivant, avec sa piece ?"
+  ]
+}

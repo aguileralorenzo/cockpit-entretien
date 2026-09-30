@@ -1,0 +1,19 @@
+{
+  "_doc": "Les textes de ton formulaire d entretien et leur etat. Sert de memoire d un cycle a l autre : ce que tu as ecrit cette annee, tu le reliras l an prochain.",
+  "entretien": {
+    "date": null,
+    "evaluateur": null,
+    "outil": null
+  },
+  "partage": {
+    "date_recommandee": null,
+    "moment": null,
+    "fait": null,
+    "raisonnement": null,
+    "message": null,
+    "a_ne_pas_faire": [],
+    "date_reelle": null
+  },
+  "champs": [],
+  "regle": null
+}

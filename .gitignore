@@ -1,0 +1,18 @@
+# Documents personnels : CV, bulletins de paie, comptes-rendus d'entretien.
+# Ils restent sur le disque mais n'entrent pas dans l'historique git.
+inbox/**
+!inbox/README.md
+!inbox/.gitkeep
+!inbox/traites/.gitkeep
+
+node_modules/
+*.tmp
+
+# Archive, documents perimes et notes remplacees, conserves hors historique
+archive/**
+!archive/notes/
+
+# Page d'export des revenus : produit de generation, reconstructible par
+# `node outils/faire-export-revenus.mjs` depuis data/. Elle duplique en outre
+# les 59 bulletins, inutile de la versionner deux fois.
+export/

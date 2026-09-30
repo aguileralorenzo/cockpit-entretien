@@ -1,0 +1,930 @@
+/* Cockpit de carriere, feuille de style.
+   Direction, sombre Atlassian. Froid, carre, plat, dense. Les surfaces se
+   distinguent par une bordure et non par une ombre, les rayons sont a 3 px,
+   la base typographique est a 14 px.
+
+   SUR LA PALETTE, a lire avant de la refaire. Le validateur de la trousse de
+   visualisation rend un echec sur la bande de clarte pour ces couleurs. Cette
+   bande ne vaut que pour une palette CATEGORIELLE de graphique, il le dit
+   lui-meme en pied de rapport. Ici ces couleurs sont des encres de statut et un
+   accent d'interface, et le seul graphique du cockpit, celui des fourchettes,
+   n'utilise qu'une teinte. Le controle applicable est le contraste WCAG, qui a
+   ete calcule sur les quatre surfaces : la plus faible des encres tombe a 4,83
+   pour un seuil de 4,5. Ne pas "corriger" la palette sur la foi du validateur
+   sans refaire ce calcul. */
+
+:root {
+  /* Surfaces, de la plus enfoncee a la plus saillante */
+  --fond: #161A1D;
+  --surface: #1D2125;
+  --surface-2: #22272B;
+  --surface-3: #282E33;
+  --trait: #2C333A;
+  --trait-fort: #38414A;
+
+  /* Encres, toutes au-dessus de 4,5 sur les quatre surfaces */
+  --texte: #B6C2CF;
+  --texte-2: #9FADBC;
+  --texte-3: #8C9BAB;
+
+  --accent: #579DFF;
+  --accent-doux: #1C2B41;
+  --accent-texte: #85B8FF;
+
+  --ok: #7EE2B8;
+  --ok-doux: #1C3329;
+  --attention: #F5CD47;
+  --attention-doux: #332E1B;
+  --alerte: #F87168;
+  --alerte-doux: #42221F;
+
+  --r: 3px;
+  --r-s: 3px;
+  --ombre: 0 4px 8px rgb(0 0 0 / 0.36), 0 0 1px rgb(0 0 0 / 0.5);
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --nav: 232px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--texte);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { margin: 0; font-weight: 580; line-height: 1.3; letter-spacing: -0.011em; }
+h1 { font-size: 15px; }
+h2 { font-size: 15px; }
+h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; }
+p { margin: 0; }
+a { color: var(--accent-texte); text-underline-offset: 2px; }
+
+/* ---------- ossature ---------- */
+
+.topbar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--nav);
+  background: var(--fond);
+  border-right: 1px solid var(--trait);
+  padding: 18px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 20;
+}
+
+.brand { display: flex; align-items: center; gap: 11px; padding: 0 8px; }
+
+.mark {
+  width: 26px; height: 26px; flex: none;
+  border-radius: var(--r);
+  background: var(--accent);
+}
+
+.sub { font-size: 12px; color: var(--texte-3); line-height: 1.45; padding: 0 8px; margin-top: -10px; }
+
+.tabs { display: flex; flex-direction: column; gap: 2px; }
+
+.tabs button {
+  appearance: none;
+  border: 0;
+  background: none;
+  color: var(--texte-2);
+  font: inherit;
+  font-size: 13.5px;
+  text-align: left;
+  padding: 6px 10px;
+  border-radius: var(--r-s);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.tabs button:hover { background: var(--surface-2); color: var(--texte); }
+.tabs button[aria-selected="true"] {
+  background: var(--surface-3);
+  color: var(--texte);
+  font-weight: 600;
+}
+
+main {
+  margin-left: var(--nav);
+  max-width: 960px;
+  padding: 24px 28px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    position: sticky;
+    inset: 0 0 auto 0;
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    border-right: 0;
+    border-bottom: 1px solid var(--trait);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .topbar::-webkit-scrollbar { display: none; }
+  .brand { padding: 0; flex: none; }
+  .brand h1 { white-space: nowrap; }
+  .sub { display: none; }
+  .tabs { flex-direction: row; gap: 4px; }
+  .tabs button { white-space: nowrap; padding: 7px 12px; }
+  main { margin-left: 0; padding: 20px 16px 80px; }
+}
+
+/* ---------- surfaces ---------- */
+
+.grid { display: grid; gap: 12px; }
+@media (min-width: 760px) {
+  .grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: var(--r);
+  padding: 16px 20px;
+}
+
+.card > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.hint { font-size: 13.5px; color: var(--texte-2); line-height: 1.55; }
+.faint { color: var(--texte-3); }
+
+.empty {
+  padding: 20px 16px;
+  border-radius: var(--r);
+  background: var(--surface-2);
+  border: 1px dashed var(--trait-fort);
+  color: var(--texte-3);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ---------- indicateurs ---------- */
+
+.stat { display: flex; flex-direction: column; gap: 3px; padding: 20px 22px; }
+.stat .value { font-size: 34px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; }
+.stat .label { font-size: 12.5px; color: var(--texte-2); order: -1; }
+.stat .note { font-size: 12.5px; color: var(--texte-3); }
+
+/* ---------- actions ---------- */
+
+.action {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 15px 0;
+  border-top: 1px solid var(--trait);
+}
+.action:first-of-type { border-top: 0; padding-top: 0; }
+
+.action .body { flex: 1; min-width: 0; }
+.action .titre { font-size: 15px; line-height: 1.45; }
+.action.done .titre { color: var(--texte-3); text-decoration: line-through; }
+.action.abandonne .titre { color: var(--texte-3); font-style: italic; }
+.action .meta { font-size: 12.5px; color: var(--texte-3); margin-top: 3px; }
+.action .note { font-size: 13.5px; color: var(--texte-2); margin-top: 7px; }
+
+.tick {
+  flex: none;
+  width: 21px; height: 21px;
+  margin-top: 2px;
+  border-radius: var(--r);
+  border: 1.5px solid var(--trait-fort);
+  background: var(--surface-2);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  color: transparent;
+  font-size: 12px;
+  line-height: 1;
+  padding: 0;
+  transition: border-color 0.12s;
+}
+.tick:hover { border-color: var(--accent); }
+.tick[data-on="true"] { background: var(--ok); border-color: var(--ok); color: #1D2125; }
+
+/* La priorite se lit a une pastille discrete, pas a une etiquette criarde. */
+.prio {
+  font-size: 12.5px;
+  color: var(--texte-3);
+}
+.prio-1 { color: var(--alerte); font-weight: 560; }
+
+.segmented { display: inline-flex; gap: 2px; background: var(--surface-2); padding: 2px; border-radius: var(--r); border: 1px solid var(--trait); }
+.segmented button {
+  appearance: none; border: 0; background: none; font: inherit; font-size: 13.5px;
+  color: var(--texte-2); padding: 4px 11px; border-radius: 2px; cursor: pointer;
+}
+.segmented button[aria-pressed="true"] { background: var(--surface-3); color: var(--texte); font-weight: 600; }
+
+/* ---------- pas a pas ---------- */
+
+.etapes { margin-top: 10px; }
+.etapes summary {
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--accent-texte);
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: var(--r);
+  background: var(--accent-doux);
+  user-select: none;
+}
+.etapes summary::-webkit-details-marker { display: none; }
+.etapes summary::before { content: "▸"; font-size: 10px; }
+.etapes[open] summary::before { content: "▾"; }
+.etapes ol {
+  margin: 12px 0 2px;
+  padding-left: 24px;
+  font-size: 14px;
+  color: var(--texte-2);
+}
+.etapes ol li { margin: 9px 0; }
+.etapes ol li::marker { color: var(--texte-3); font-size: 13px; }
+
+/* ---------- habitudes ---------- */
+
+.habit { padding: 18px 0; border-top: 1px solid var(--trait); }
+.habit:first-of-type { border-top: 0; padding-top: 0; }
+.weeks { display: flex; gap: 5px; margin-top: 12px; }
+.week {
+  width: 32px; height: 26px;
+  border: 1px solid var(--trait);
+  border-radius: var(--r);
+  background: var(--surface-2);
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--texte-3);
+  padding: 0;
+  transition: background 0.12s;
+}
+.week:hover { background: var(--surface-3); border-color: var(--trait-fort); }
+.week[data-on="true"] { background: var(--ok); border-color: var(--ok); color: #1D2125; font-weight: 600; }
+.week.current { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- competences ---------- */
+
+.skill { padding: 14px 0; border-top: 1px solid var(--trait); }
+.skill:first-of-type { border-top: 0; padding-top: 0; }
+.skill .row { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; }
+.skill .nom { font-size: 14.5px; }
+.skill .ecart { font-size: 13px; flex: none; }
+.ecart.gap { color: var(--alerte); font-weight: 560; }
+.ecart.ok { color: var(--ok); }
+.ecart.unknown { color: var(--texte-3); }
+
+.bar {
+  position: relative;
+  height: 6px;
+  margin-top: 9px;
+  border-radius: 3px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.bar .required { position: absolute; inset: 0 auto 0 0; background: var(--accent-doux); }
+.bar .current { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 3px; }
+
+.domain-title {
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--texte-3);
+  margin: 26px 0 10px;
+  font-weight: 560;
+}
+.domain-title:first-child { margin-top: 0; }
+
+/* ---------- realisations ---------- */
+
+.timeline { display: flex; flex-direction: column; }
+.entry { padding: 18px 0 18px 22px; border-left: 2px solid var(--trait); position: relative; }
+.entry::before {
+  content: "";
+  position: absolute; left: -5px; top: 25px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+}
+.entry .date { font-size: 12.5px; color: var(--texte-3); }
+.entry .impact { font-size: 14px; color: var(--texte-2); margin-top: 7px; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.chip {
+  font-size: 12px; padding: 2px 8px; border-radius: var(--r);
+  background: var(--surface-3); color: var(--texte-2); border: 1px solid var(--trait);
+}
+
+/* ---------- formulaires ---------- */
+
+form.stack { display: flex; flex-direction: column; gap: 14px; }
+label { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; color: var(--texte-2); }
+input, textarea, select {
+  font: inherit; font-size: 13.5px;
+  color: var(--texte);
+  background: var(--surface-2);
+  border: 1px solid var(--trait-fort);
+  border-radius: var(--r);
+  padding: 7px 10px;
+  width: 100%;
+}
+input:focus, textarea:focus, select:focus {
+  outline: 0;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+  background: var(--surface-2);
+}
+textarea { resize: vertical; min-height: 76px; }
+
+button.btn {
+  appearance: none;
+  font: inherit; font-size: 13.5px; font-weight: 500;
+  border-radius: var(--r);
+  padding: 6px 12px;
+  cursor: pointer;
+  border: 0;
+  background: var(--surface-3);
+  color: var(--texte);
+  transition: background 0.1s;
+}
+button.btn:hover { background: var(--trait-fort); }
+button.btn.primary { background: var(--accent); color: #1D2125; font-weight: 600; }
+button.btn.primary:hover { background: var(--accent-texte); }
+.actions-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+/* ---------- divers ---------- */
+
+.kv { display: grid; grid-template-columns: minmax(150px, auto) 1fr; gap: 11px 20px; font-size: 14.5px; }
+.kv dt { color: var(--texte-2); font-size: 13.5px; }
+.kv dd { margin: 0; }
+
+.file { display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid var(--trait); font-size: 14px; }
+.file:first-of-type { border-top: 0; padding-top: 0; }
+.file .size { font-size: 12.5px; color: var(--texte-3); flex: none; }
+
+ul.plain { margin: 0; padding-left: 20px; font-size: 14.5px; color: var(--texte-2); }
+ul.plain li { margin: 6px 0; }
+ul.plain li::marker { color: var(--texte-3); }
+
+pre.export {
+  background: var(--fond);
+  border: 1px solid var(--trait);
+  border-radius: var(--r);
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  max-height: 420px;
+  overflow: auto;
+}
+
+/* ---------- notes, surface de lecture ---------- */
+
+.md { max-width: 72ch; line-height: 1.65; font-size: 14.5px; }
+.md > *:first-child { margin-top: 0; }
+.md h1 { font-size: 20px; font-weight: 600; margin: 0 0 20px; letter-spacing: -0.02em; }
+.md h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 38px 0 14px;
+  letter-spacing: -0.012em;
+}
+.md h3 { font-size: 14px; font-weight: 620; margin: 22px 0 9px; }
+.md p { margin: 14px 0; color: var(--texte-2); }
+.md ul, .md ol { margin: 14px 0; padding-left: 24px; color: var(--texte-2); }
+.md li { margin: 7px 0; }
+.md li::marker { color: var(--texte-3); }
+.md hr { border: 0; border-top: 1px solid var(--trait); margin: 34px 0; }
+.md code {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  background: var(--surface-2);
+  border: 1px solid var(--trait);
+  padding: 1px 5px;
+  border-radius: var(--r);
+}
+.md strong { font-weight: 620; color: var(--texte); }
+
+.md table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+  font-size: 14px;
+  display: block;
+  overflow-x: auto;
+}
+.md th, .md td { padding: 10px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--trait); }
+.md th { color: var(--texte-2); font-weight: 560; font-size: 13px; white-space: nowrap; }
+.md tbody tr:last-child td { border-bottom: 0; }
+
+/* Chaque citation est un texte a coller, le bouton reste visible en permanence. */
+.bloc-copiable { position: relative; margin: 20px 0; }
+.bloc-copiable blockquote {
+  margin: 0;
+  padding: 16px 18px;
+  background: var(--accent-doux);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--r);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+.bloc-copiable blockquote p { margin: 9px 0; color: var(--texte); }
+.bloc-copiable blockquote > *:first-child { margin-top: 0; }
+.bloc-copiable blockquote > *:last-child { margin-bottom: 0; }
+.bloc-copiable blockquote ul { color: var(--texte); }
+
+.copier-bloc {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  padding: 4px 11px;
+  font-size: 12.5px;
+  background: var(--surface);
+  border: 1px solid var(--trait-fort);
+}
+.copier-bloc:hover { background: var(--surface-3); }
+
+@media (max-width: 600px) {
+  .copier-bloc { position: static; display: block; margin-bottom: 10px; }
+  .md { font-size: 15px; }
+}
+
+.toast {
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+  background: var(--surface-3); color: var(--texte);
+  border: 1px solid var(--trait-fort);
+  padding: 9px 18px; border-radius: var(--r); font-size: 13.5px; z-index: 50;
+  box-shadow: var(--ombre);
+}
+.toast[data-kind="error"] { background: var(--alerte); border-color: var(--alerte); color: #1D2125; }
+
+/* Texte d'annonce archive, dans le panneau depliable de l'onglet Marche */
+.annonce {
+  margin-top: 12px;
+  padding: 16px 18px;
+  background: var(--surface-2);
+  border-radius: var(--r-s);
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--texte-2);
+  max-height: 460px;
+  overflow-y: auto;
+}
+
+/* ---------- graphique de fourchettes, onglet Marche ---------- */
+
+/* Une grille a deux colonnes, sans ecart. La colonne 2 est le seul referentiel
+   d'abscisse du graphique, barres, points, graduations et calque des reperes s'y
+   rapportent tous. Le calque se cale sur --col-noms, la meme valeur que la
+   premiere colonne, donc sa largeur egale exactement celle des pistes. */
+.plage {
+  --col-noms: 132px;
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--col-noms) 1fr;
+  gap: 0;
+  align-items: center;
+  padding-top: 56px;
+}
+
+.plage-nom {
+  font-size: 13px;
+  color: var(--texte-2);
+  text-align: right;
+  padding: 7px 14px 7px 0;
+}
+
+.plage-piste { position: relative; height: 20px; }
+
+.plage-barre {
+  position: absolute;
+  top: 6px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+.plage-min, .plage-max {
+  position: absolute;
+  top: 0;
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  white-space: nowrap;
+}
+.plage-min { transform: translateX(calc(-100% - 7px)); color: var(--texte-2); font-weight: 560; }
+.plage-max { transform: translateX(7px); color: var(--texte-3); }
+
+/* Les deux reperes, en points sur leur propre rangee. Rempli pour la position
+   actuelle, cercle pour la demande, la forme distingue donc autant que la teinte. */
+.point {
+  position: absolute;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.point-toi { background: var(--texte); }
+.point-demande { background: var(--surface); border: 2px solid var(--texte-2); }
+
+/* Axe en filet discret, une nuance au dessus de la surface */
+.plage-axe {
+  position: relative;
+  height: 20px;
+  margin-top: 8px;
+  border-top: 1px solid var(--trait);
+}
+.graduation {
+  position: absolute;
+  top: 5px;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--texte-3);
+}
+
+/* Le calque des reperes recouvre exactement la colonne du trace */
+.plage-calque {
+  position: absolute;
+  left: var(--col-noms);
+  right: 0;
+  top: 0;
+  bottom: 28px;
+  pointer-events: none;
+}
+
+.repere {
+  position: absolute;
+  top: 56px;
+  bottom: 0;
+  width: 0;
+  border-left: 2px solid var(--texte);
+}
+.repere-demande { border-left-style: dashed; border-left-color: var(--texte-3); }
+
+.repere-etiquette {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--texte-2);
+  text-align: center;
+  white-space: nowrap;
+}
+.repere-toi .repere-etiquette { color: var(--texte); }
+
+@media (max-width: 700px) {
+  .plage { --col-noms: 96px; }
+  .plage-nom { font-size: 12px; padding-right: 10px; }
+  .plage-max { display: none; }
+}
+
+/* ---------- navigation groupee ---------- */
+
+.groupe { display: flex; flex-direction: column; gap: 2px; margin-bottom: 16px; }
+.groupe:last-child { margin-bottom: 0; }
+.groupe-titre {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texte-3);
+  padding: 0 12px 6px;
+}
+
+/* L'onglet actif porte un repere franc, pas seulement un fond colore */
+.tabs button[aria-selected="true"] {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+@media (max-width: 900px) {
+  .tabs { flex-direction: row; gap: 4px; }
+  .groupe { flex-direction: row; gap: 4px; margin-bottom: 0; }
+  .groupe-titre { display: none; }
+  .tabs button[aria-selected="true"] { box-shadow: inset 0 -2px 0 var(--accent); }
+}
+
+/* ---------- bascule de base de comparaison ---------- */
+
+.bascule {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--surface-2);
+  border: 1px solid var(--trait);
+  padding: 2px;
+  border-radius: var(--r);
+  margin-bottom: 16px;
+}
+.bascule-choix {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border-radius: 2px;
+  font-size: 13px;
+  color: var(--texte-2);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s, color 0.12s;
+}
+.bascule-choix:has(input:checked) {
+  background: var(--surface);
+  color: var(--texte);
+  font-weight: 560;
+  box-shadow: var(--ombre);
+}
+.bascule-choix input { width: 14px; height: 14px; margin: 0; accent-color: var(--accent); cursor: pointer; }
+
+.alerte-base {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: var(--r-s);
+  background: var(--attention-doux);
+  color: var(--texte-2);
+  border-left: 3px solid var(--attention);
+}
+
+/* ---------- Entrainement, exercice a choix ---------- */
+
+/* La replique du manager. Seul vestige du chat retire, parce que l exercice
+   s en sert pour presenter la situation. */
+.bulle { max-width: 100%; }
+.bulle p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  background: var(--surface-2);
+  border: 1px solid var(--trait);
+  padding: 11px 14px;
+  border-radius: var(--r) var(--r) var(--r) 0;
+  display: inline-block;
+}
+.bulle-qui {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texte-3);
+  margin-bottom: 5px;
+}
+
+.exo { margin-top: 20px; }
+.exo-titre { margin: 0 0 4px; font-size: 15px; font-weight: 560; }
+.exo-contexte { margin: 0 0 16px; font-style: italic; }
+
+.choix-liste { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+
+/* Bouton de reponse. Large cible, texte a gauche, pas de troncature : il doit
+   se lire comme une phrase qu'on prononcerait, pas comme une etiquette. */
+.choix {
+  appearance: none;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  padding: 14px 16px;
+  border: 1px solid var(--trait);
+  border-radius: var(--r-s);
+  background: var(--surface);
+  color: var(--texte);
+  transition: background 0.12s, border-color 0.12s;
+}
+.choix:hover:not(:disabled) { background: var(--surface-2); border-color: var(--texte-3); }
+.choix:disabled { cursor: default; }
+
+.choix-texte { display: block; font-size: 14.5px; line-height: 1.55; }
+.choix-motif {
+  display: block;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--trait);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--texte-2);
+}
+
+/* L'etat se lit au liseré et au fond, jamais a la couleur seule : le motif
+   ecrit sous l'option dit explicitement laquelle est bonne. */
+.choix-bon { border-color: var(--ok); background: var(--ok-doux); }
+.choix-bon .choix-motif { border-top-color: var(--ok); }
+.choix-mauvais { border-color: var(--alerte); background: var(--alerte-doux); }
+.choix-mauvais .choix-motif { border-top-color: var(--alerte); }
+.choix-neutre { opacity: 0.45; }
+
+@media (max-width: 700px) {
+  .choix { padding: 13px 14px; }
+}
+
+/* Entete a droite : le compteur et le bouton de reprise voyagent ensemble,
+   sinon space-between centrerait le compteur entre le titre et le bouton. */
+.entete-droite { display: flex; align-items: center; gap: 12px; }
+.recommencer { padding: 5px 13px; font-size: 13px; }
+
+/* Listes des notes : le marqueur est ecrit dans le texte par markdown(), la puce
+   native est donc coupee. C'est ce qui permet au bouton Copier de restituer les
+   tirets et les numeros, qu'innerText perdrait autrement. */
+.md ul.marquee, .md ol.marquee { list-style: none; padding-left: 2px; }
+.md .marque { color: var(--texte-3); }
+
+/* ---------- onglet Reste a faire ---------- */
+
+.reste {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--trait);
+}
+.reste:first-of-type { border-top: 0; padding-top: 0; }
+.reste .body { flex: 1; min-width: 0; }
+.reste .titre { font-size: 14.5px; line-height: 1.45; }
+.reste .meta { font-size: 12.5px; color: var(--texte-3); margin-top: 3px; }
+.reste .bloc-copiable { margin: 10px 0 0; }
+
+/* ---------- onglet Discussions ---------- */
+
+.discussion > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  user-select: none;
+}
+.discussion > summary::-webkit-details-marker { display: none; }
+.discussion-titre { font-size: 15px; font-weight: 560; color: var(--texte); }
+.discussion > summary::before { content: "▸"; font-size: 10px; color: var(--texte-3); order: -1; }
+.discussion[open] > summary::before { content: "▾"; }
+.discussion-date { font-size: 12.5px; color: var(--texte-3); flex: none; font-variant-numeric: tabular-nums; }
+.discussion-source {
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  word-break: break-all;
+}
+.discussion .md { margin-top: 14px; }
+.discussion .md h2 { margin-top: 24px; font-size: 15px; }
+
+/* ---------- onglet Remuneration ---------- */
+
+/* Les deux graphiques sont en SVG, faits main, pour tenir la meme facture que le
+   reste. Aucune teinte nouvelle : l'accent porte la serie reelle, les encres de
+   texte portent la serie reconstituee, et le fond d'alerte porte l'aire du manque
+   a gagner. La distinction entre les deux series passe par la FORME autant que par
+   la teinte, trait plein contre trait tirete, pour rester lisible sans couleur. */
+
+/* Sous 760 px le graphique ne retrecit pas jusqu'a l'illisible, c'est la boite qui
+   defile. Un defilement contenu dans une carte, jamais celui de la page. */
+.trace-boite { overflow-x: auto; overscroll-behavior-x: contain; }
+.trace { display: block; width: 100%; min-width: 560px; height: auto; }
+
+.grille { stroke: var(--trait); stroke-width: 1; }
+.axe-y { fill: var(--texte-3); font-size: 11.5px; text-anchor: end; font-variant-numeric: tabular-nums; }
+.axe-x { fill: var(--texte-3); font-size: 11.5px; text-anchor: middle; font-variant-numeric: tabular-nums; }
+
+.courbe { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.pt { fill: var(--accent); stroke: var(--surface); stroke-width: 1.5; }
+
+/* La reconstitution : tiretee et en encre atténuée, pour qu'on ne la confonde
+   jamais avec un fait constate. */
+.promis { fill: none; stroke: var(--texte-3); stroke-width: 2; stroke-dasharray: 6 4; stroke-linejoin: round; }
+.aire-manque { fill: var(--alerte-doux); stroke: none; }
+
+.repere { stroke: var(--trait-fort); stroke-width: 1; stroke-dasharray: 3 3; }
+.repere-txt { fill: var(--texte-3); font-size: 11px; text-anchor: middle; font-variant-numeric: tabular-nums; }
+
+.etiq { fill: var(--texte-3); font-size: 12px; font-variant-numeric: tabular-nums; }
+.etiq.reel { fill: var(--texte); font-weight: 560; }
+
+/* ---------- les revalorisations ---------- */
+
+/* Une rangee par revalorisation, etiquetee directement. Elles sont assez peu
+   nombreuses pour que chacune porte son taux et sa source, donc pas de legende. */
+.revalo {
+  display: grid;
+  grid-template-columns: 92px 1fr 78px;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 11px 0;
+  border-top: 1px solid var(--trait);
+}
+.revalo:first-of-type { border-top: 0; padding-top: 0; }
+.revalo-quand { font-size: 13.5px; color: var(--texte-2); font-variant-numeric: tabular-nums; }
+.revalo-piste { height: 8px; background: var(--surface-2); border-radius: 4px; }
+.revalo-barre { display: block; height: 8px; background: var(--accent); border-radius: 4px; }
+.revalo-taux {
+  font-size: 15px;
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.revalo-taux.fort { color: var(--ok); }
+.revalo-src { grid-column: 2 / -1; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 560px) {
+  .revalo { grid-template-columns: 1fr 78px; }
+  .revalo-quand { grid-column: 1 / -1; }
+  .revalo-src { grid-column: 1 / -1; }
+}
+
+/* ---------- la frise des classifications ---------- */
+
+.frise { display: flex; gap: 2px; align-items: stretch; }
+.palier { min-width: 0; }
+.palier-barre {
+  height: 8px;
+  background: var(--accent-doux);
+  border-top: 2px solid var(--accent);
+  border-radius: 0 0 var(--r) var(--r);
+  margin-bottom: 9px;
+}
+.palier-cl { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.palier-meta { font-size: 12px; color: var(--texte-2); line-height: 1.5; }
+
+@media (max-width: 760px) {
+  .frise { flex-direction: column; gap: 14px; }
+  .palier-barre { margin-bottom: 7px; }
+}
+
+/* ---------- annee par annee ---------- */
+
+/* Quatre grandeurs emboitees du meme montant, coût employeur puis brut puis net
+   puis impot. C'est une rampe sequentielle d'une seule teinte et non une palette
+   categorielle : la position dans l'emboitement se lit a la clarte, et chaque
+   rangee porte sa valeur en clair, donc l'identite ne tient jamais a la couleur. */
+.an { padding: 14px 0; border-top: 1px solid var(--trait); }
+.an:first-of-type { border-top: 0; padding-top: 0; }
+.an-titre { font-size: 14px; font-weight: 600; margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.an-pistes { display: grid; gap: 2px; }
+.piste { display: flex; align-items: center; gap: 10px; }
+.piste b {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--texte-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.seg { display: block; height: 11px; border-radius: 0 var(--r) var(--r) 0; background: var(--accent); }
+.seg.cout { opacity: 1; }
+.seg.brut { opacity: 0.72; }
+.seg.net { opacity: 0.48; }
+.seg.impot { opacity: 0.28; }
+
+.legende { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; }
+.cle { font-size: 12.5px; color: var(--texte-2); display: flex; align-items: center; gap: 7px; }
+.cle::before {
+  content: '';
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+.cle.brut::before { opacity: 0.72; }
+.cle.net::before { opacity: 0.48; }
+.cle.impot::before { opacity: 0.28; }
+
+/* ---------- les trois series de la trajectoire ---------- */
+
+/* Le brut porte l'accent, le net percu porte l'encre de texte. Les deux ne se
+   croisent jamais, le net etant toujours sous le brut, donc leur position les
+   distingue en plus de leur teinte et le graphique reste lisible sans couleur.
+   L'impot est seul dans son cadre, il peut donc reprendre l'accent sans
+   ambiguite : rien d'autre ne le porte a cet endroit. */
+.courbe.net { stroke: var(--texte); }
+.courbe.impot { stroke: var(--accent); }
+
+.sous-titre {
+  margin: 18px 0 6px;
+  font-size: 12.5px;
+  color: var(--texte-2);
+}
+
+/* Les cles de series lineaires prennent un trait et non un carre, pour que la
+   legende ressemble a ce qu'elle designe. */
+.cle.trait-brut::before, .cle.trait-net::before {
+  width: 16px;
+  height: 2px;
+  border-radius: 0;
+}
+.cle.trait-net::before { background: var(--texte); }

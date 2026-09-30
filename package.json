@@ -1,0 +1,18 @@
+{
+  "name": "cockpit-entretien",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Poste de travail local pour preparer un entretien annuel de remuneration. Zero dependance, rien ne quitte la machine.",
+  "scripts": {
+    "start": "node server.js",
+    "verif": "node outils/verif-gabarit.mjs && node outils/contraste.mjs && node outils/classes.mjs"
+  },
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18"
+  },
+  "optionalDependencies": {
+    "pdf-parse": "^2.1.7"
+  }
+}

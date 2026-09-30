@@ -1,0 +1,12 @@
+{
+  "_doc": "Tes bulletins de paie, extraits par liste blanche de champs. AUCUN identifiant personnel n y entre, ni numero de securite sociale, ni adresse, ni coordonnees bancaires : c est ce qui rend ce fichier versionnable. Les mois absents sont declares dans trous et ne sont JAMAIS interpoles. Voir modules/france/ pour l extracteur de bulletins francais.",
+  "extrait_le": null,
+  "couverture": {
+    "de": null,
+    "a": null,
+    "mois": null
+  },
+  "trous": [],
+  "rejets": [],
+  "fiches": []
+}

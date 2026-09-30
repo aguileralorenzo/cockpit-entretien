@@ -1,0 +1,39 @@
+{
+  "_doc": "Les offres du marche relevees, avec leur fourchette ANNONCEE. Une estimation d agregateur n est pas une fourchette annoncee et ne doit jamais servir de comparaison opposable : marque-la comme telle. ou_chercher liste des sources de veille, elle est fournie.",
+  "reference": {
+    "package_actuel_equivalent_brut": null,
+    "seuil_a_egaler": null,
+    "coefficient_net_vers_brut": null,
+    "note": null,
+    "regle_alignement": null
+  },
+  "ou_chercher": [
+    {
+      "source": "Welcome to the Jungle",
+      "url": "https://www.welcometothejungle.com/fr/jobs",
+      "note": "Affiche souvent une fourchette. Filtrer par intitule et par localisation."
+    },
+    {
+      "source": "Free-Work",
+      "url": "https://www.free-work.com/fr/tech-it/jobs",
+      "note": "Specialise tech, affiche frequemment le salaire ou le taux journalier. Filtrer par region et par type de contrat."
+    },
+    {
+      "source": "HelloWork",
+      "url": "https://www.hellowork.com/fr-fr/emploi/",
+      "note": "Large, y compris hors tech."
+    },
+    {
+      "source": "Indeed",
+      "url": "https://fr.indeed.com/",
+      "note": "Trier par salaire. ATTENTION, les estimations Indeed ne sont PAS des fourchettes annoncees, ne les utilise jamais comme reference opposable."
+    },
+    {
+      "source": "LinkedIn Jobs",
+      "url": "https://www.linkedin.com/jobs/",
+      "note": "Filtre Salaire quand l'annonce le renseigne."
+    }
+  ],
+  "employeurs_reperes": [],
+  "offres": []
+}

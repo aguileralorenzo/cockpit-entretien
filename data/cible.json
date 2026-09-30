@@ -1,0 +1,81 @@
+{
+  "_doc": "Les trajectoires que tu vises, leurs prerequis, jalons et cout reel. cout_reel n est pas decoratif : un plan de carriere qui n affiche pas ses heures et ses arbitrages n est pas un plan. references_marche.grille_conventionnelle porte les minima de ta convention collective, avec leur source et leur date de collecte.",
+  "cible_active": null,
+  "references_marche": {
+    "date_collecte": null,
+    "grille_conventionnelle": {
+      "source": null,
+      "url": null,
+      "points": [],
+      "constat_cle": null,
+      "definition_2_3": {
+        "texte": null,
+        "source": null,
+        "url": null,
+        "deux_criteres": {
+          "encadrement": null,
+          "anciennete": null
+        }
+      }
+    }
+  },
+  "trajectoires": {
+    "seniorite": {
+      "libelle": null,
+      "intitule_vise": null,
+      "horizon_mois": null,
+      "note_horizon": null,
+      "prerequis": [],
+      "remuneration_visee": {
+        "plancher_conventionnel": null,
+        "min": null,
+        "max": null,
+        "source": null,
+        "base_mensuelle": [],
+        "date_source": null,
+        "demande_annoncee_mensuel": null,
+        "cible_mensuel": null,
+        "plancher_mensuel": null,
+        "decomposition": null,
+        "repli": null,
+        "plancher_absolu_mensuel": null,
+        "methode": null,
+        "package_equivalent_brut": null,
+        "seuil_offre_externe": null,
+        "note_package": null
+      },
+      "jalons": [],
+      "cout_reel": {
+        "heures_par_semaine": null,
+        "note_heures": null,
+        "risques": [],
+        "arbitrages_perso": []
+      },
+      "axe_differenciant": {
+        "libelle": null,
+        "note": null,
+        "reserve": null
+      },
+      "note_objectif_3": null
+    },
+    "management": {
+      "libelle": null,
+      "intitule_vise": null,
+      "pistes_a_trancher": [],
+      "horizon_mois": null,
+      "prerequis": [],
+      "remuneration_visee": {
+        "min": null,
+        "max": null,
+        "source": null,
+        "date_source": null
+      },
+      "jalons": [],
+      "cout_reel": {
+        "heures_par_semaine": null,
+        "risques": [],
+        "arbitrages_perso": []
+      }
+    }
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "_doc": "Les scores de tes series d'entrainement, les vingt dernieres. Ecrit par l'onglet Entrainement, tu n'as pas a le remplir a la main. Le bilan compare une serie a la precedente et signale ce qui revient : une faute presente sur deux series n'est pas une inattention, c'est un reflexe a defaire.",
+  "series": []
+}

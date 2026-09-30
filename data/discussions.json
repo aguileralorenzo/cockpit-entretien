@@ -1,0 +1,4 @@
+{
+  "_doc": "Les analyses produites au fil des pieces que tu deposes dans inbox/. Ecrit par le skill relire, lisible dans l'onglet Discussions. Une entree par piece traitee : id, date, titre, source (le chemin de la piece), contenu en markdown.",
+  "entrees": []
+}

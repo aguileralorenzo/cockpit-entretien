@@ -1,0 +1,12 @@
+{
+  "_doc": "Referentiel d auto-evaluation. L echelle et les domaines sont fournis et ne se modifient pas sans raison, c est ce qui rend deux cycles comparables. niveau_actuel est ton auto-evaluation, niveau_requis vient de la trajectoire visee, preuve est le fait date qui justifie le niveau. Sans preuve, le niveau n est qu une opinion.",
+  "echelle": {
+    "0": "aucune exposition",
+    "1": "notions, j'ai vu faire",
+    "2": "je le fais accompagne",
+    "3": "autonome sur mon perimetre",
+    "4": "je fais monter les autres dessus",
+    "5": "reference reconnue au-dela de mon equipe"
+  },
+  "competences": []
+}

@@ -1,0 +1,36 @@
+{
+  "_doc": "La configuration du cockpit, par opposition a ton dossier qui vit dans les autres fichiers de data/. C'est le seul endroit ou le logiciel apprend qui tu es et comment ton entreprise s'appelle. Rien de tout cela n'est ecrit dans le code. Le skill /demarrer le remplit pour toi, tu peux aussi l'editer a la main.",
+
+  "identite": {
+    "_doc": "Ce qui te designe. Sert aux libelles de l'interface et, surtout, a la censure des pages publiees : tout ce qui est liste ici est refuse dans un document destine a sortir de ta machine.",
+    "prenom": null,
+    "nom": null,
+    "employeur": null,
+    "managers": [],
+    "clients": [],
+    "autres_motifs": []
+  },
+
+  "libelles": {
+    "_doc": "Les mots de ton contexte, affiches tels quels dans l'interface. Laisse null pour un repli neutre.",
+    "outil_rh": null,
+    "cycle_entretien": null
+  },
+
+  "modules": {
+    "_doc": "Les modules actifs. france ajoute les grilles conventionnelles, le lecteur de bulletins de paie francais et les motifs de confidentialite du pays. Sans aucun module, le cockpit fonctionne quand meme, il est simplement plus neutre.",
+    "actifs": [],
+    "prereglage_employeur": null
+  },
+
+  "affichage": {
+    "_doc": "Les bornes des graphiques. null les fait calculer depuis tes donnees, ce qui est le bon reglage dans presque tous les cas. Ne les fige que si tu veux comparer deux annees sur la meme echelle.",
+    "devise": "EUR",
+    "echelle_marche": { "min": null, "max": null }
+  },
+
+  "serveur": {
+    "_doc": "Le serveur n'ecoute que sur 127.0.0.1 et ce n'est pas configurable, volontairement : ce dossier contient tes bulletins de paie, il n'a rien a faire sur un reseau. Seul le port se change, par la variable d'environnement PORT ou ici.",
+    "port": 4173
+  }
+}

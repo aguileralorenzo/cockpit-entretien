@@ -1,0 +1,206 @@
+{
+  "_doc": "Ta situation reelle, faits et etat uniquement. L analyse vit dans notes/. Chaque montant porte sa source, ou reste null avec source a sourcer. Ne remplis jamais un champ de memoire : si tu n as pas la piece, laisse null.",
+  "nom": null,
+  "employeur": null,
+  "localisation": null,
+  "convention_collective": null,
+  "date_entree_entreprise": null,
+  "anciennete_entreprise_annees": null,
+  "intitule_contractuel": null,
+  "role_reel_tenu": null,
+  "classification": {
+    "statut": null,
+    "position": null,
+    "coefficient": null,
+    "inchangee_depuis": null,
+    "note": null
+  },
+  "progression_interne": [],
+  "remuneration": {
+    "brut_annuel_base": null,
+    "brut_mensuel_base": null,
+    "prime_conventionnelle": null,
+    "brut_annuel_total": null,
+    "variable": null,
+    "date_derniere_revalorisation": null,
+    "forfait_jours": null,
+    "source": null,
+    "historique": [],
+    "avant_octobre_2025": {
+      "brut_bulletin_mensuel": null,
+      "mois_reference": null,
+      "emploi_affiche": null,
+      "position": null,
+      "coefficient": null,
+      "cumul_janv_sept_2025": null,
+      "source": null
+    },
+    "engagement_non_tenu": {
+      "engagement": null,
+      "source": null,
+      "realise_au_passage": null,
+      "realise_cumule_12_mois": null,
+      "manque_a_gagner_annuel_eur": [],
+      "note": null,
+      "point_cle": null
+    },
+    "package": {
+      "note_de_frais": {
+        "montant_par_jour": null,
+        "nature": null,
+        "assiette": null,
+        "jours_reference": null,
+        "total_annuel_net": null,
+        "mensuel_net": null,
+        "versement": null,
+        "source": null,
+        "note": null
+      },
+      "equivalence": {
+        "taux_net_sur_brut": null,
+        "taux_prelevement_source": null,
+        "coefficient_brut_pour_un_net": null,
+        "methode": null,
+        "avertissement": null
+      },
+      "totaux": {
+        "brut_annuel": null,
+        "note_de_frais_en_equivalent_brut": null,
+        "package_en_equivalent_brut": null,
+        "percu_reellement_par_mois": null
+      },
+      "seuil_offre_externe": {
+        "montant": null,
+        "signification": null
+      },
+      "usage": null
+    }
+  },
+  "mission_en_cours": {
+    "client": null,
+    "structure": null,
+    "role": null,
+    "chaine_de_sous_traitance": null,
+    "encadrement": null,
+    "rentabilite": null,
+    "debut": null,
+    "charge_reelle_pct": null,
+    "source": null
+  },
+  "stack_principale": [],
+  "formation": null,
+  "formation_en_alternance": null,
+  "parcours_employeurs": [],
+  "manager": {
+    "evaluateur_2025": null,
+    "statut": null,
+    "departement_2025": null,
+    "departement_2026": null,
+    "note": null,
+    "actuel": null,
+    "parcours_actuel": {
+      "formation": null,
+      "projet_initial": null,
+      "employeur_precedent": null,
+      "geographie": null,
+      "source": null,
+      "ce_que_ca_implique": []
+    },
+    "suppositions_non_sourcees": {
+      "contenu": null,
+      "statut": null,
+      "pourquoi": null
+    }
+  },
+  "dernier_entretien_annuel": {
+    "date": null,
+    "signe_par_le_salarie": null,
+    "client": null,
+    "matrice": null,
+    "verdict_manager": null,
+    "objectif_principal": {
+      "libelle": null,
+      "echeance": null,
+      "progression_derniere_mesure": null,
+      "sous_objectifs": []
+    }
+  },
+  "prochain_entretien_annuel": null,
+  "contraintes": {
+    "heures_dispo_par_semaine": {
+      "officiel": null,
+      "reel_pct_du_temps_de_travail": null,
+      "note": null,
+      "lecture": null
+    },
+    "mobilite_geographique": null,
+    "contraintes_perso": null
+  },
+  "ce_qui_bloque_aujourd_hui": [],
+  "anciennete_metier_annees": null,
+  "anciennete_cadre_annees": null,
+  "leadership_technique": [],
+  "langues": {
+    "anglais": null,
+    "espagnol": null
+  },
+  "atouts_sous_exploites": [],
+  "cv": {
+    "fichier": null,
+    "refait_le": null,
+    "perime": null,
+    "positionnement": null,
+    "format": null,
+    "a_verifier": [],
+    "photo": null,
+    "longueur": null
+  },
+  "evaluations_recentes": [],
+  "mission_precedente": {
+    "client_final": null,
+    "equipe": null,
+    "chaine_de_sous_traitance": null,
+    "role": null,
+    "encadrement": null,
+    "perimetre_reel": [],
+    "source": null,
+    "perimetre_technique": null,
+    "fin": null,
+    "note": null
+  },
+  "entretien_a_venir": {
+    "date": null,
+    "evaluateur": null,
+    "fonction_evaluateur": null,
+    "outil": null,
+    "matrice": null,
+    "objectifs": [],
+    "document": null,
+    "report": {
+      "date_initiale": null,
+      "nouvelle_date": null,
+      "note": null
+    }
+  },
+  "formations_periode_2025_2026": [],
+  "contribution_2026": {
+    "ia_sur_les_chiffrages": {
+      "description": null,
+      "nature": null,
+      "valeur_pour_l_employeur": null,
+      "piste_future": null,
+      "source": null,
+      "resultat_mesure": null,
+      "issue": null
+    },
+    "avant_vente": null,
+    "marge": null,
+    "projet_neuf": null
+  },
+  "axe_de_developpement_choisi": {
+    "date": null,
+    "axes": [],
+    "abandonne": null,
+    "raison": null
+  }
+}
