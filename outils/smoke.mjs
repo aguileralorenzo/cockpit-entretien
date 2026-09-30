@@ -1,7 +1,7 @@
 // Harnais DOM minimal : execute public/app.js hors navigateur pour verifier que les
 // toutes les vues rendent sans lever, y compris sur un dossier vide, et que
 // les interactions ecrivent bien via PUT.
-// PORT permet de viser une instance de test sans couper celle de Lorenzo.
+// PORT permet de viser une instance de test sans couper celle qui tourne.
 const BASE = `http://127.0.0.1:${process.env.PORT ?? 4173}`;
 const fetchReel = globalThis.fetch;
 
@@ -106,7 +106,7 @@ console.log(`\nReflexes, ${exos.situations.length} situations :`);
 
 await tabs.declencher('click', faux({ onglet: 'entrainement' }));
 if (!vue.innerHTML.includes('choix-liste')) erreurs.push('les reflexes ne rendent pas');
-// bulle-manager est legitime, l'exercice s'en sert pour la replique de Thibault.
+// bulle-manager est legitime, l'exercice s'en sert pour la replique du manager.
 if (/ollama|chat-saisie|chat-pied/i.test(vue.innerHTML)) erreurs.push('du chat subsiste dans la vue');
 
 // Etat de depart, pour restituer le fichier a la fin du passage.

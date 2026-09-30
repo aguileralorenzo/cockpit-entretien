@@ -1,0 +1,58 @@
+{
+  "_doc": "Bibliotheque d'archetypes de manager, pour le jeu de role. Chacun decrit une facon de refuser et, surtout, LA PORTE qu'il laisse ouverte. Choisis celui qui ressemble le plus a la personne en face, puis ajoute tes observations dans data/negociation.json.manager.traits. Si aucun ne correspond, prends le plus proche et corrige par les traits : un archetype approximatif vaut mieux qu'un manager generique.",
+
+  "archetypes": [
+    {
+      "id": "tranche-vite",
+      "nom": "Il tranche vite et ne revient jamais",
+      "reconnaissable_a": "Il prend position parfois avant la fin de ta phrase. Detendu, sur de lui, il ne se formalise de rien et ne s'enerve jamais.",
+      "comment_il_refuse": "Franchement et sans motif, du genre « ecoute, franchement, on ne peut simplement pas faire ca ». Il ne donne une cause que si on la lui demande explicitement.",
+      "la_porte": "Une position enoncee a voix haute ne se reprend pas, cela lui couterait la face. Mais il peut repondre a une QUESTION DIFFERENTE sans se contredire, typiquement donner un calendrier apres avoir refuse un montant. On ne lui demande pas de changer d'avis, on change de question.",
+      "le_vrai_risque": "Pas le conflit, le vide. Un entretien sympathique et rapide dont on ressort sans rien d'ecrit.",
+      "ce_qui_ne_marche_pas": "Contre-argumenter sa position. Cela la fige definitivement."
+    },
+    {
+      "id": "temporise",
+      "nom": "Il reconnait, puis temporise",
+      "reconnaissable_a": "Il valide chaleureusement ton travail, ne conteste presque rien, et pourtant rien n'avance. Il parle volontiers de l'an prochain.",
+      "comment_il_refuse": "Il ne refuse pas, il reporte. « On verra au prochain cycle », « laisse-moi regarder », « ce n'est pas le bon moment ».",
+      "la_porte": "Il accepte facilement une date, parce qu'une date lui coute moins qu'un montant. Chaque report doit repartir avec une echeance ecrite et un livrable nomme.",
+      "le_vrai_risque": "L'annee blanche. Tu ressors content, et douze mois plus tard tu reprends la meme conversation au meme point.",
+      "ce_qui_ne_marche_pas": "Se satisfaire de la reconnaissance. Elle ne coute rien et ne se depose pas en banque."
+    },
+    {
+      "id": "procedurier",
+      "nom": "Il s'abrite derriere le processus",
+      "reconnaissable_a": "Il renvoie a la grille, au cycle budgetaire, aux RH, a la direction. Souvent sincere, et souvent exact.",
+      "comment_il_refuse": "« Ce n'est pas moi qui decide », « la campagne est close », « il y a une procedure ».",
+      "la_porte": "Il repond tres bien a « qui decide, et a quelle echeance ». Une impossibilite personnelle devient alors une question de circuit et de calendrier, a laquelle il peut repondre sans se dejuger. Il accepte souvent de preparer le dossier avec toi.",
+      "le_vrai_risque": "Le renvoi infini d'un interlocuteur a l'autre, sans qu'aucun ne soit jamais responsable.",
+      "ce_qui_ne_marche_pas": "Contester la procedure. Tu perds, et tu passes pour quelqu'un qui ne comprend pas la maison."
+    },
+    {
+      "id": "negociateur",
+      "nom": "Il negocie vraiment",
+      "reconnaissable_a": "Il te demande tes chiffres, il les discute, il fait des contre-propositions chiffrees.",
+      "comment_il_refuse": "Par une contre-proposition inferieure, presentee comme un effort consenti.",
+      "la_porte": "Il respecte un dossier solide et une position tenue. C'est le seul archetype avec lequel la qualite de ta preparation se paye directement.",
+      "le_vrai_risque": "Ceder trop vite parce que la conversation est agreable et qu'il a l'air de faire un effort. Sa premiere offre est par construction la plus basse qu'il puisse faire.",
+      "ce_qui_ne_marche_pas": "Arriver sans chiffres. Il ira au plus bas, et ce sera de ta faute."
+    },
+    {
+      "id": "sous-contrainte",
+      "nom": "Il n'a reellement pas la main",
+      "reconnaissable_a": "Il te soutient ouvertement, parfois plus que tu ne l'attendais, et il est sincerement gene.",
+      "comment_il_refuse": "En expliquant sa contrainte, avec des details verifiables.",
+      "la_porte": "Il devient un allie s'il a de quoi te defendre ailleurs. Donne-lui des munitions ecrites, un document d'une page qu'il peut faire remonter tel quel.",
+      "le_vrai_risque": "La compassion. Sa contrainte est reelle, et elle ne change rien a la tienne.",
+      "ce_qui_ne_marche_pas": "Insister sur lui. Il n'a pas le levier, et tu abimes le seul soutien que tu as."
+    }
+  ],
+
+  "difficultes": {
+    "_doc": "Le curseur de difficulte de la repetition. Il se combine avec l'archetype et ne le remplace pas.",
+    "conciliant": "Il ne conteste pas ton dossier et cherche une solution. Une objection quand meme, et jamais le montant plein du premier coup. Sert a se chauffer.",
+    "realiste": "Il reconnait le travail, temporise sur l'argent, place deux ou trois objections, puis propose quelque chose en dessous. Le deroule le plus probable, et le reglage par defaut.",
+    "difficile": "Il tranche tot et ne bouge plus. Des que le montant arrive, refus franc et detendu, sans motif. Il ne remonte jamais sur le montant, mais il peut ceder un calendrier si on le lui demande comme une question distincte."
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "_doc": "Les reperes de ta negociation, et le SEUL endroit ou ils existent. Le skill train les lit pour jouer ton manager, le generateur de debrief les lit pour mettre en page ta note, et le controle de publication les lit pour refuser tout montant etranger au dossier. Ne les recopie jamais ailleurs : deux copies finissent toujours par diverger, et c'est le chiffre faux qui sortira en seance.",
+
+  "montants": {
+    "_doc": "Un seul chiffre s'annonce, jamais une fourchette : en face, on entend le bas. Les planchers ne se disent JAMAIS a voix haute, ils servent a savoir quand s'arreter, pas a negocier.",
+    "devise": "EUR",
+    "periodicite": "mensuel",
+    "actuel": null,
+    "demande": null,
+    "cible": null,
+    "plancher": null,
+    "plancher_absolu": null,
+    "source_plancher_absolu": null
+  },
+
+  "decomposition": {
+    "_doc": "De quoi est faite la demande. Une demande decomposee se defend, un nombre rond se discute. La somme des parts doit valoir demande moins actuel, le controle le verifie.",
+    "parts": []
+  },
+
+  "engagement_non_tenu": {
+    "_doc": "S'il existe une promesse ecrite non honoree, c'est la piece la plus forte du dossier. Cite-la mot pour mot, avec sa date, son auteur et sa signature. Sans citation exacte, ce n'est qu'un souvenir.",
+    "existe": false,
+    "citation": null,
+    "source": null,
+    "date": null,
+    "signe_par": [],
+    "ce_qui_etait_promis": null,
+    "ce_qui_a_ete_applique": null,
+    "ecart_mensuel": null
+  },
+
+  "repli": {
+    "_doc": "Le repli n'est JAMAIS de baisser le montant, c'est de l'etaler. Un montant qu'on baisse ne remonte jamais, un calendrier qu'on ecrit s'applique. Deux paliers, deux dates, tous deux dans le compte rendu.",
+    "paliers": []
+  },
+
+  "a_obtenir_par_ecrit": {
+    "_doc": "Ce sans quoi la seance n'a rien produit. A recapituler a voix haute avant de sortir de la salle, et a faire figurer dans le compte rendu. Quatre points est un bon ordre de grandeur.",
+    "points": []
+  },
+
+  "manager": {
+    "_doc": "Le portrait de la personne en face. Il commande entierement le jeu de role : un manager qui tranche vite ne se joue pas comme un manager qui tergiverse. archetype reprend une entree de modules/archetypes-manager.json, traits ajoute ce que tu as observe. Tout ce que tu mets ici doit etre un FAIT observe, pas une supposition.",
+    "nom": null,
+    "archetype": null,
+    "traits": [],
+    "contraintes": [],
+    "suppositions_non_utilisables": []
+  },
+
+  "ce_que_le_manager_sait": {
+    "_doc": "REGLE CENTRALE DE L'EXERCICE. Le skill train ne joue ton manager qu'avec ce qui est ecrit ici. Tout ce qui n'y figure pas, il l'ignore : ton montant, tes planchers, ta strategie, tes recherches. Sans cette asymetrie, l'exercice te pousserait a ton plancher et t'apprendrait a ceder.",
+    "faits": []
+  },
+
+  "objections_attendues": {
+    "_doc": "Les objections propres a ton contexte, en plus de celles que le skill connait deja. Une par entree, avec la reponse que tu veux tenir.",
+    "entrees": []
+  },
+
+  "fautes_specifiques": {
+    "_doc": "Les pieges propres a TON dossier, numerotes a partir de 10 pour ne pas heurter les neuf fautes universelles du skill. Exemple typique, un avantage que tu ne dois pas mentionner parce qu'il autorise l'employeur a le compter comme de la remuneration.",
+    "entrees": []
+  }
+}
