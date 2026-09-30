@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-labelledby="t d">
+  <title id="t">Cockpit d'entretien</title>
+  <desc id="d">Deux trajectoires de rémunération partant du même point. L'une continue de monter par paliers, l'autre s'aplatit. L'écart entre les deux est la demande.</desc>
+
+  <!--
+    La marque dit la these du produit, et rien d'autre.
+
+    Un salaire ne monte pas continument, il saute : d'ou les paliers plutot
+    qu'une courbe. La ligne pleine est ce qui a ete verse, la ligne tiretee ce
+    qui avait ete promis, et l'aire entre les deux est exactement ce dont
+    l'entretien discute.
+
+    Tout est en currentColor pour que la marque tienne sur fond clair comme sur
+    fond sombre, sur GitHub comme ailleurs.
+  -->
+
+  <g fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter">
+
+    <!-- Le cadre, discret, c'est le poste de pilotage. -->
+    <rect x="8" y="8" width="104" height="104" rx="3" stroke-width="3" opacity="0.18"/>
+
+    <!-- L'aire entre les deux trajectoires, le manque a gagner. -->
+    <path d="M20 84 H44 V72 H68 V54 H92 V36 H20 V58 H44 V70 H68 V84 Z"
+          fill="currentColor" stroke="none" opacity="0.13"/>
+
+    <!-- Ce qui avait ete promis : les paliers continuent de monter. -->
+    <path d="M20 84 H44 V72 H68 V54 H92 V36" stroke-width="3.5" stroke-dasharray="7 5" opacity="0.55"/>
+
+    <!-- Ce qui a ete verse : les paliers s'ecrasent. -->
+    <path d="M20 84 H44 V70 H68 V62 H92 V58" stroke-width="5"/>
+
+    <!-- Le point de depart commun, la ou les deux histoires coincident encore. -->
+    <circle cx="20" cy="84" r="4" fill="currentColor" stroke="none"/>
+
+    <!-- L'ecart d'aujourd'hui, ce que la fiche chiffre. -->
+    <path d="M100 36 V58" stroke-width="3.5" opacity="0.55"/>
+    <path d="M96 36 H104 M96 58 H104" stroke-width="3"/>
+  </g>
+</svg>

@@ -1,3 +1,5 @@
+<img src="logo.svg" alt="" width="96" align="right">
+
 # Cockpit d'entretien
 
 Un poste de travail local pour préparer un entretien annuel de rémunération, et surtout pour ne pas recommencer à zéro l'année suivante.
@@ -128,4 +130,8 @@ Le corollaire vaut pour Claude : dans ce dépôt, il lui est interdit d'avancer 
 
 ## Licence
 
-À définir.
+Source ouverte à la lecture, **usage personnel autorisé**, redistribution et usage commercial sur autorisation écrite. Voir [LICENSE](LICENSE).
+
+Concrètement, vous pouvez cloner ce dépôt et vous en servir pour préparer vos propres entretiens, y compris en le modifiant. Vous ne pouvez pas le redistribuer ni en tirer un service payant sans accord.
+
+Ce logiciel ne fournit ni conseil juridique, ni conseil en ressources humaines, ni garantie de résultat. Il organise vos données et vos pièces, les décisions restent les vôtres.
