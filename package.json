@@ -6,7 +6,7 @@
   "description": "Poste de travail local pour preparer un entretien annuel de remuneration. Zero dependance, rien ne quitte la machine.",
   "scripts": {
     "start": "node server.js",
-    "verif": "node outils/verif-gabarit.mjs && node outils/contraste.mjs && node outils/classes.mjs"
+    "verif": "node outils/verif-gabarit.mjs && node outils/verif-acceptation.mjs && node outils/contraste.mjs && node outils/classes.mjs"
   },
   "license": "UNLICENSED",
   "engines": {

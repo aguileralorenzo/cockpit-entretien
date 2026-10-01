@@ -79,21 +79,43 @@ Les données vivent dans `data/*.json`, et c'est la **source de vérité unique*
 
 ---
 
-## L'entraînement, sans modèle
+## L'entraînement, quatre modes
 
-L'onglet **Entraînement** est un exercice à choix. Une réplique du manager, trois ou quatre réponses, une seule bonne. Chaque mauvaise porte le numéro de la faute correspondante, et le motif s'affiche au clic.
+L'onglet **Entraînement** porte quatre façons de travailler la même chose, de la plus facile à la plus exigeante.
 
-**Aucun modèle n'intervient.** Tout est écrit dans `data/exercices.json`, donc rien ne peut inventer un montant ni vous conseiller une faute. L'onglet fonctionne sans réseau et sans rien d'installé.
+**Les réflexes.** Une réplique du manager, trois ou quatre réponses, une seule bonne. Chaque mauvaise porte le numéro de la faute correspondante, et le motif s'affiche au clic. Tout est écrit dans `data/exercices.json`, donc **aucun modèle n'intervient** : rien ne peut inventer un montant ni vous conseiller une faute. Fonctionne sans réseau et sans rien d'installé.
 
-Le bilan compare votre série à la précédente et signale **ce qui revient d'une série à l'autre**. Une faute présente sur deux séries n'est pas une inattention, c'est un réflexe à défaire.
+**Les chiffres.** Vous tapez un montant de mémoire, au centime. Trois verdicts : exact, **approché** si vous avez l'euro mais pas les décimales, faux. La distinction n'est pas une coquetterie : un montant arrondi reste vrai et cesse d'être une preuve, et quelqu'un qui lit vite un calcul relève une approximation sans y penser.
 
-## Le rejeu des répétitions
+Reconnaître une bonne réponse parmi quatre est beaucoup plus facile que la produire, et c'est pourtant la seconde capacité qui sert en entretien.
 
-Une séance de `/train` se joue dans le terminal, qui efface. L'onglet **Répétitions** la garde et la rejoue en conversation, réplique par réplique, avec la correction dépliable sous chacune de vos réponses.
+**Aucune réponse n'est stockée.** `data/chiffres.json` ne contient que des questions, chacune pointant vers l'endroit de votre dossier où la valeur se trouve. L'application la résout à l'affichage, donc le quiz suit votre dossier tout seul, et une question dont la valeur manque est retirée plutôt que posée sans réponse.
 
-Ce qui compte n'est pas le direct, c'est la relecture. Une faute qu'on retrouve d'une séance à l'autre n'est pas une inattention, et on ne le voit qu'en comparant.
+**En direct.** La répétition se joue dans l'interface, et la correction s'affiche sous chaque réplique. Le canal est un simple fichier, `data/echange.json` : la page y écrit, votre session Claude Code le surveille et y répond.
 
-**Aucun appel réseau** n'est fait pour cet affichage, c'est du texte déjà produit. Le moteur reste votre session Claude Code.
+**Aucun modèle ne tourne sur votre machine.** Celui qui joue le manager et qui corrige est votre agent, avec votre dossier sous les yeux.
+
+**Les séances.** Le rejeu. Une séance se rejoue en conversation, réplique par réplique, avec la correction dépliable sous chacune de vos réponses. C'est là que se trouve la valeur : une faute qu'on retrouve d'une séance à l'autre n'est pas une inattention, et on ne le voit qu'en comparant.
+
+---
+
+## La grille d'acceptation
+
+La faute la plus commune de tout l'exercice n'est pas de mal demander, c'est **d'accepter en quatre mots une proposition qu'on avait décidé de refuser**. Elle arrive avec son contexte : le ton de la personne en face, la fatigue, l'envie d'en finir.
+
+L'onglet **Rémunération** porte une grille qui décide à l'avance, palier par palier, ce que vaut chaque réponse possible : la fourchette en hausse mensuelle brute, le pourcentage correspondant, un emoji, un commentaire, et **ce que vous faites**. Un rappel court apparaît dans **Engagements** dès qu'une réponse est attendue, avec sa date.
+
+Les paliers sont **produits** depuis votre dossier, jamais écrits à la main :
+
+```bash
+node outils/faire-acceptation.mjs
+```
+
+Chaque frontière est un montant de votre dossier, aucune n'est choisie : la moyenne annoncée par l'employeur, ce que vous avez réellement obtenu au dernier cycle, vos deux planchers, votre cible, votre demande. Un seuil que votre dossier ne permet pas de calculer ne produit simplement pas sa bande, et les voisines se recousent. Une grille à quatre paliers vaut mieux qu'une grille à huit dont quatre frontières sont inventées.
+
+Les **textes**, eux, vous appartiennent : l'emoji, le verdict, le commentaire et l'action sont livrés rédigés, le générateur les conserve, et vous devriez les réécrire avec vos mots. Un emoji qui ne correspond pas à ce que vous ressentiriez vraiment ne sert à rien.
+
+`node outils/verif-acceptation.mjs` refuse une grille **périmée** et nomme la borne qui a bougé. C'est ce qui rend l'automatisme réel : un fichier qu'on peut oublier de régénérer n'est pas automatique, un fichier dont la péremption fait échouer le contrôle l'est.
 
 ---
 
@@ -115,10 +137,13 @@ Sans aucun module actif, le cockpit fonctionne. Il est simplement plus neutre.
 Tous les outils sont en lecture seule sauf mention contraire, et tous tournent sans dépendance.
 
 ```bash
-node outils/verif-gabarit.mjs    # aucune donnée personnelle avant un partage
-node outils/contraste.mjs        # contraste WCAG de la palette
-node outils/classes.mjs          # couverture CSS
-PORT=4199 node outils/smoke.mjs  # toutes les vues rendent, même à vide
+npm run verif                    # les quatre contrôles ci-dessous d'un coup
+
+node outils/verif-gabarit.mjs      # aucune donnée personnelle avant un partage
+node outils/verif-acceptation.mjs  # la grille correspond encore au dossier
+node outils/contraste.mjs          # contraste WCAG de la palette
+node outils/classes.mjs            # couverture CSS
+PORT=4199 node outils/smoke.mjs    # toutes les vues rendent, même à vide
 ```
 
 **`verif-gabarit.mjs` avant chaque commit**, si vous versionnez votre dossier. Il produit volontairement des faux positifs : un faux positif coûte trente secondes de lecture, un faux négatif coûte votre confidentialité.

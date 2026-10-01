@@ -67,6 +67,18 @@ Dans cet ordre, parce que chaque étape éclaire la suivante.
 
 **Les quatre écrits à obtenir.** Ce sans quoi la séance n'aura rien produit.
 
+**La grille d'acceptation.** Une fois les montants posés, lance `node outils/faire-acceptation.mjs`. Elle calcule, palier par palier, ce que vaudra chaque réponse possible. Puis **fais relire les textes** : l'emoji, le commentaire et surtout la colonne « ce que tu fais » sont livrés rédigés, mais ils doivent devenir les siens. Un emoji qui ne correspond pas à ce qu'il ressentirait vraiment ne sert à rien, et une consigne qu'il n'a pas écrite ne sera pas suivie.
+
+Explique pourquoi cette grille existe maintenant et pas le jour venu : la réponse arrivera avec son contexte, le ton de la personne en face, la fatigue, l'envie d'en finir. C'est dans ce moment-là qu'on accepte en quatre mots ce qu'on avait décidé de refuser.
+
+---
+
+## Étape 3 bis, les chiffres à savoir par cœur
+
+`data/chiffres.json` arrive avec quinze questions universelles qui pointent vers son dossier. Dès l'étape 3 terminée, elles se résolvent toutes seules et le mode **Les chiffres** devient utilisable.
+
+Ajoute-lui les siennes. Tout montant qu'il devra sortir sans hésiter mérite une ligne, et **toute ligne doit pointer vers le dossier plutôt que porter sa réponse** : une valeur recopiée finit toujours par diverger de sa source, et c'est le chiffre faux qui sortira en séance.
+
 ---
 
 ## Étape 4, le reste, quand il y a de la matière

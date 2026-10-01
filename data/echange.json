@@ -1,0 +1,10 @@
+{
+  "_doc": "Canal de la repetition en direct. Un tampon, pas une archive : il ne garde qu'une seance a la fois, et outils/archiver-direct.mjs en fait une entree durable dans repetitions.json avant d'en relancer une. Le protocole tient en deux champs : `attente` est leve par l'interface quand tu as ecrit, et baisse par outils/repondre-direct.mjs quand la reponse est posee. Aucun modele ne tourne ici, c'est ta session Claude Code qui lit et ecrit ce fichier.",
+  "session": {
+    "id": null,
+    "difficulte": "réaliste",
+    "active": false
+  },
+  "attente": false,
+  "messages": []
+}

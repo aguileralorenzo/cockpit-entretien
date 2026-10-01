@@ -1034,3 +1034,227 @@ pre.export {
   color: var(--fond);
   font-weight: 600;
 }
+/* ---------- saisie de la repetition en direct ---------- */
+
+.saisie { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.saisie textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  padding: 12px 14px;
+  color: var(--texte);
+  background: var(--surface-2);
+  border: 1px solid var(--trait-fort);
+  border-radius: var(--r);
+  resize: vertical;
+}
+.saisie textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.saisie textarea:disabled { opacity: 0.55; cursor: wait; }
+.saisie-barre { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.btn.secondaire { background: var(--surface-2); color: var(--texte-2); border-color: var(--trait-fort); }
+
+/* ---------- il ecrit ---------- */
+
+/* Trois points qui se soulevent l'un apres l'autre, comme dans une messagerie.
+   La bulle se place du cote du manager, a l'endroit exact ou sa reponse va
+   apparaitre : c'est ce qui fait la difference avec un texte d'attente, l'oeil
+   est deja au bon endroit quand la reponse tombe. */
+
+.tape p {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 15px 18px;
+  min-height: 0;
+}
+.tape i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--texte-3);
+  animation: ecrit 1.25s infinite ease-in-out;
+}
+.tape i:nth-child(2) { animation-delay: 0.16s; }
+.tape i:nth-child(3) { animation-delay: 0.32s; }
+
+@keyframes ecrit {
+  0%, 62%, 100% { opacity: 0.32; transform: translateY(0); }
+  31%           { opacity: 1;    transform: translateY(-4px); }
+}
+
+/* Sans animation, les points restent visibles et l'attribut aria porte le sens.
+   Un indicateur qui disparait pour qui refuse le mouvement n'en est plus un. */
+@media (prefers-reduced-motion: reduce) {
+  .tape i { animation: none; opacity: 0.55; }
+}
+
+
+/* ------------------------------------------------ grille d'acceptation ----
+   Un tableau de cinq colonnes dont deux portent du texte long. Il ne peut donc
+   pas simplement defiler lateralement au telephone, on y lirait un mot par
+   ligne. En dessous de 860 px chaque ligne redevient un bloc, et les intitules
+   de colonne sont reinjectes depuis data-col.                                */
+
+.table-boite { overflow-x: auto; }
+
+.grille-acceptation {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.grille-acceptation th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texte-3);
+  border-bottom: 1px solid var(--trait-fort);
+  padding: 0 12px 8px 0;
+  white-space: nowrap;
+}
+
+.grille-acceptation td {
+  vertical-align: top;
+  padding: 12px 12px 12px 0;
+  border-bottom: 1px solid var(--trait);
+  color: var(--texte-2);
+}
+
+.grille-acceptation tr:last-child td { border-bottom: 0; }
+
+.grille-acceptation td:first-child { color: var(--texte); white-space: nowrap; }
+.grille-acceptation td:first-child strong { display: block; }
+.grille-acceptation td:first-child .faint { font-size: 11px; }
+
+.grille-acceptation .chiffre {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--texte);
+}
+
+.grille-acceptation .reaction { min-width: 118px; }
+.grille-acceptation .reaction .emo { display: block; font-size: 22px; line-height: 1.1; }
+.grille-acceptation .reaction .faint { font-size: 11px; }
+
+/* La phrase prete a prononcer, distincte de la consigne qui la precede. */
+.grille-acceptation .dire {
+  display: block;
+  margin-top: 6px;
+  color: var(--accent-texte);
+  font-style: italic;
+}
+
+/* Le plancher absolu. C'est la seule ligne mise en avant, parce que c'est la
+   seule frontiere qui change la nature de la reponse et pas son montant. */
+.grille-acceptation tr.pivot td {
+  background: var(--accent-doux);
+  border-top: 1px solid var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.card.attente { border-left: 2px solid var(--attention); }
+
+@media (max-width: 860px) {
+  .grille-acceptation thead { position: absolute; left: -9999px; }
+  .grille-acceptation tr { display: block; padding: 14px 0; border-bottom: 1px solid var(--trait); }
+  .grille-acceptation tr:last-child { border-bottom: 0; }
+  .grille-acceptation td { display: block; border: 0; padding: 0 0 8px; }
+  .grille-acceptation td:last-child { padding-bottom: 0; }
+
+  .grille-acceptation td::before {
+    content: attr(data-col);
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--texte-3);
+    margin-bottom: 2px;
+  }
+
+  /* L'emoji et son verdict se lisent sur une seule ligne une fois empiles. */
+  .grille-acceptation .reaction .emo { display: inline; font-size: 18px; margin-right: 6px; }
+
+  .grille-acceptation tr.pivot {
+    background: var(--accent-doux);
+    border-left: 2px solid var(--accent);
+    padding-left: 12px;
+  }
+  .grille-acceptation tr.pivot td { background: none; border: 0; }
+}
+
+/* --------------------------------------------------------- les chiffres ----
+   Restituer un montant de tete. Trois verdicts et non deux : un montant juste
+   a l'euro reste vrai et cesse d'etre une preuve, le jaune dit exactement
+   cela, ni la reussite verte ni l'erreur rouge.                              */
+
+.ecart.warn { color: var(--attention); font-weight: 560; }
+
+.chiffre-saisie {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.chiffre-saisie input {
+  flex: 1 1 180px;
+  min-width: 0;
+  padding: 10px 12px;
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+  background: var(--surface-3);
+  color: var(--texte);
+  border: 1px solid var(--trait-fort);
+  border-radius: var(--r);
+}
+
+.chiffre-saisie input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.chiffre-saisie input:disabled { color: var(--texte-3); background: var(--surface-2); }
+
+.chiffre-unite {
+  font-size: 19px;
+  color: var(--texte-3);
+  margin-left: -4px;
+}
+
+.chiffre-verdict {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: var(--r);
+  border-left: 2px solid var(--trait-fort);
+  background: var(--surface-2);
+}
+
+.chiffre-verdict.exact { border-left-color: var(--ok); background: var(--ok-doux); }
+.chiffre-verdict.approche { border-left-color: var(--attention); background: var(--attention-doux); }
+.chiffre-verdict.faux { border-left-color: var(--alerte); background: var(--alerte-doux); }
+
+.chiffre-titre { margin: 0 0 8px; color: var(--texte); font-size: 14px; }
+.chiffre-titre strong { font-variant-numeric: tabular-nums; }
+
+.chiffre-signe { margin-right: 6px; font-size: 16px; }
+.chiffre-verdict.exact .chiffre-signe { color: var(--ok); }
+.chiffre-verdict.approche .chiffre-signe { color: var(--attention); }
+.chiffre-verdict.faux .chiffre-signe { color: var(--alerte); }
+
+.chiffre-src { margin-top: 8px; font-size: 11px; }
+
+.chiffre-bilan { padding: 11px 0; border-top: 1px solid var(--trait); }
+.chiffre-bilan .row { align-items: baseline; gap: 12px; }
+.chiffre-bilan strong { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 480px) {
+  .chiffre-saisie input { font-size: 17px; }
+  .chiffre-saisie button { flex: 1 1 100%; }
+}

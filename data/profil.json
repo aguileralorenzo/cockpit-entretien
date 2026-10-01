@@ -26,15 +26,6 @@
     "forfait_jours": null,
     "source": null,
     "historique": [],
-    "avant_octobre_2025": {
-      "brut_bulletin_mensuel": null,
-      "mois_reference": null,
-      "emploi_affiche": null,
-      "position": null,
-      "coefficient": null,
-      "cumul_janv_sept_2025": null,
-      "source": null
-    },
     "engagement_non_tenu": {
       "engagement": null,
       "source": null,
@@ -73,6 +64,23 @@
         "montant": null,
         "signification": null
       },
+      "usage": null
+    },
+    "avant_derniere_revalorisation": {
+      "brut_bulletin_mensuel": null,
+      "mois_reference": null,
+      "emploi_affiche": null,
+      "position": null,
+      "coefficient": null,
+      "cumul_janv_sept_2025": null,
+      "source": null,
+      "_doc": "Le bulletin qui precede la derniere revalorisation. C'est la reference a partir de laquelle se calcule ce qui a reellement ete percu, et donc l'ecart avec ce qui avait ete promis."
+    },
+    "moyenne_augmentations_entreprise": {
+      "_doc": "Si l'employeur annonce une moyenne d'augmentation, note-la ici avec sa source. Elle sert d'etalon : une proposition au niveau de la moyenne contredit une appreciation presentee comme superieure a la moyenne.",
+      "taux_pct": null,
+      "nature": null,
+      "source": null,
       "usage": null
     }
   },

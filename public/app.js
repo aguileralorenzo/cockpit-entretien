@@ -27,14 +27,20 @@ const state = {
   paie: null,
   entrainement: null,
   exercices: null,
+  echange: null,
+  acceptation: null,
+  chiffres: null,
+  negociation: null,
   inbox: { enAttente: [], traites: [] },
   notes: [],
   noteContenu: {}, // nom de fichier vers markdown brut, charge a la demande
 };
 
 const ui = {
-  repetitionOuverte: null, // identifiant de la repetition affichee dans l'onglet Repetitions
-  onglet: 'reste', // jusqu'au 29/09, remettre 'tableau' ensuite
+  repetitionOuverte: null, // identifiant de la repetition rejouee
+  onglet: 'tableau',
+  // Le mode courant de chaque onglet qui en heberge plusieurs.
+  mode: { actions: 'horizon', entrainement: 'reflexes', notes: 'notes' },
   filtreStatut: 'ouvertes',
   cibleAffichee: null, // renseigne apres chargement depuis cible.cible_active
   exportVisible: false,
@@ -49,15 +55,16 @@ const ui = {
   // s'ecrit sur disque qu'au debrief, pas a chaque replique.
   entrainement: {
     exercice: { i: 0, ordre: null, choisi: null, reponses: [], enregistree: false },
+    // Le quiz des chiffres. Meme nature que l'exercice, meme raison de vivre
+    // hors de state : il ne s'ecrit sur disque qu'au bilan.
+    chiffres: { i: 0, verdict: null, saisie: '', reponses: [], enregistree: false },
   },
 };
 
 const ONGLETS = [
-  { id: 'reste', libelle: 'Reste à faire', groupe: 'Piloter' },
   { id: 'tableau', libelle: 'Tableau de bord', groupe: 'Piloter' },
   { id: 'actions', libelle: "Plan d'action", groupe: 'Piloter' },
   { id: 'entrainement', libelle: 'Entraînement', groupe: 'Piloter' },
-  { id: 'repetitions', libelle: 'Répétitions', groupe: 'Piloter' },
   { id: 'competences', libelle: 'Compétences', groupe: 'Mon dossier' },
   { id: 'realisations', libelle: 'Réalisations', groupe: 'Mon dossier' },
   { id: 'engagements', libelle: 'Engagements', groupe: 'Mon dossier' },
@@ -65,9 +72,32 @@ const ONGLETS = [
   { id: 'offres', libelle: 'Marché', groupe: 'Se situer' },
   { id: 'cible', libelle: 'Cible et jalons', groupe: 'Se situer' },
   { id: 'notes', libelle: 'Notes', groupe: 'Ressources' },
-  { id: 'discussions', libelle: 'Discussions', groupe: 'Ressources' },
   { id: 'inbox', libelle: 'Inbox', groupe: 'Ressources' },
 ];
+
+// Trois onglets hebergent plusieurs vues au lieu d'occuper chacun une ligne de
+// navigation. Quatorze entrees ne tiennent pas sur un ecran de portable, et une
+// entree qu'on n'atteint pas vaut une fonctionnalite absente.
+//
+// Le regroupement n'est pas qu'une economie de place, il dit quelque chose :
+// Reste a faire etait le plan d'action lu par echeance, Repetitions etait de
+// l'entrainement, Discussions etait une surface de lecture comme les Notes.
+const MODES = {
+  actions: [
+    { id: 'horizon', libelle: 'Par horizon' },
+    { id: 'echeance', libelle: 'Par échéance' },
+  ],
+  entrainement: [
+    { id: 'reflexes', libelle: 'Les réflexes' },
+    { id: 'chiffres', libelle: 'Les chiffres' },
+    { id: 'direct', libelle: 'En direct' },
+    { id: 'seances', libelle: 'Les séances' },
+  ],
+  notes: [
+    { id: 'notes', libelle: 'Notes' },
+    { id: 'discussions', libelle: 'Discussions' },
+  ],
+};
 
 const STATUTS = {
   a_faire: 'À faire',
@@ -926,6 +956,8 @@ function vueEngagements() {
       </div>
     </div>
 
+    ${rappelAcceptation()}
+
     <div class="card">
       <header><h2>Ce qui a été promis</h2><span class="hint">${liste.length} engagement(s)</span></header>
       <p class="hint" style="margin-bottom:14px">
@@ -1245,6 +1277,251 @@ function bilanReflexes(rep, total) {
     </div>`;
 }
 
+/* -- les chiffres -----------------------------------------------------------
+   Restituer un montant de tete, au centime. Reconnaitre une bonne reponse
+   parmi quatre, ce que font les Reflexes, est beaucoup plus facile que la
+   produire : c'est pourtant la seconde capacite qui sert en entretien.
+
+   AUCUNE reponse n'est stockee. data/chiffres.json ne porte que des POINTEURS
+   vers le dossier, resolus ici a l'affichage. Une valeur qui n'est pas
+   recopiee ne peut pas diverger, et le quiz suit le dossier tout seul.       */
+
+// Un chemin pointe dans l'etat charge. Un segment numerique entre dans un
+// tableau, ce qui permet de viser une grille conventionnelle par son rang.
+function lireChemin(chemin) {
+  return String(chemin).split('.').reduce((o, k) => (o == null ? undefined : o[k]), state);
+}
+
+// Trois operations suffisent a couvrir le dossier. Les ajouter dans la donnee
+// plutot qu'une expression libre evite d'avoir du code dans un JSON.
+function resoudreValeur(v) {
+  if (v == null) return null;
+
+  // Un operande absent rend TOUTE l'operation absente. Sans cette garde,
+  // `null - null` vaut 0, et 0 est un nombre fini : une question derivee de
+  // deux valeurs non renseignees passerait pour resolue, avec zero pour bonne
+  // reponse.
+  const n = (x) => {
+    const y = typeof x === 'number' ? x : lireChemin(x);
+    return typeof y === 'number' && Number.isFinite(y) ? y : null;
+  };
+  const deux = (paire) => {
+    const [a, b] = paire.map(n);
+    return a === null || b === null ? null : [a, b];
+  };
+
+  let r = null;
+  if (v.chemin !== undefined) r = lireChemin(v.chemin);
+  else if (v.moins) { const d = deux(v.moins); r = d && d[0] - d[1]; }
+  else if (v.fois) { const d = deux(v.fois); r = d && d[0] * d[1]; }
+  return typeof r === 'number' && Number.isFinite(r) ? r : null;
+}
+
+// Une question dont le pointeur ne resout plus est retiree de la serie. La
+// poser sans reponse apprendrait un chiffre faux, ce qui est pire que de ne
+// pas la poser. Le compte affiche dit combien ont ete ecartees.
+function questionsChiffres() {
+  const toutes = state.chiffres?.questions ?? [];
+  const retenues = [];
+  for (const q of toutes) {
+    const exact = resoudreValeur(q.valeur);
+    if (exact !== null) retenues.push({ ...q, exact });
+  }
+  return { retenues, ecartees: toutes.length - retenues.length };
+}
+
+// Ce que l'utilisateur tape. On accepte la virgule comme le point, l'espace
+// fine insecable que produit toLocaleString, et le symbole colle au nombre.
+// Quand les deux separateurs sont presents, le dernier est le decimal.
+function lireNombre(saisie) {
+  let t = String(saisie ?? '').replace(/[\s\u00a0\u202f]/g, '').replace(/[€%eEuUrR]/g, '');
+  if (t.includes(',') && t.includes('.')) {
+    t = t.lastIndexOf(',') > t.lastIndexOf('.') ? t.replace(/\./g, '') : t.replace(/,/g, '');
+  }
+  t = t.replace(',', '.');
+  if (!/^-?\d+(\.\d+)?$/.test(t)) return null;
+  return Number(t);
+}
+
+// Exact au centime. Approche a un euro pres, ou a un dixieme de point pour un
+// pourcentage : juste, mais sans le tranchant. Un montant arrondi reste vrai et
+// cesse d'etre une preuve, d'ou le verdict intermediaire plutot qu'un binaire.
+function verdictChiffre(donne, exact, unite) {
+  const ecart = Math.abs(donne - exact);
+  if (ecart < 0.005) return 'exact';
+  return ecart <= (unite === 'pct' ? 0.1 : 1) ? 'approche' : 'faux';
+}
+
+const VERDICTS = {
+  exact: { libelle: 'Exact', classe: 'ok', signe: '✓' },
+  approche: { libelle: 'Approché', classe: 'warn', signe: '≈' },
+  faux: { libelle: 'Faux', classe: 'gap', signe: '✗' },
+};
+
+const montreChiffre = (v, unite) => (unite === 'pct' ? pct(v) : eur2(v));
+
+function enregistrerSerieChiffres(rep, total) {
+  const x = ent().chiffres;
+  if (x.enregistree) return;
+  x.enregistree = true;
+
+  // On garde les identifiants manques, pas un libelle : c'est ce qui permet de
+  // voir quelle question resiste d'une serie a l'autre meme si son texte change.
+  state.entrainement.series_chiffres ??= [];
+  state.entrainement.series_chiffres.unshift({
+    date: new Date().toISOString(),
+    exacts: rep.filter((r) => r.verdict === 'exact').length,
+    approches: rep.filter((r) => r.verdict === 'approche').length,
+    total,
+    manques: rep.filter((r) => r.verdict !== 'exact').map((r) => r.id),
+  });
+  state.entrainement.series_chiffres = state.entrainement.series_chiffres.slice(0, 20);
+  sauver('entrainement');
+}
+
+function bilanChiffres(rep, questions) {
+  const total = questions.length;
+  enregistrerSerieChiffres(rep, total);
+
+  const series = state.entrainement.series_chiffres ?? [];
+  const exacts = rep.filter((r) => r.verdict === 'exact').length;
+  const approches = rep.filter((r) => r.verdict === 'approche').length;
+  const rates = rep.filter((r) => r.verdict !== 'exact');
+
+  const precedente = series[1];
+  const delta = precedente ? exacts - precedente.exacts : null;
+  const progression = delta === null
+    ? '<span class="faint">première série</span>'
+    : `série précédente ${precedente.exacts} sur ${precedente.total}, ${
+        delta > 0 ? `<span class="ecart ok">+${delta}</span>` : delta < 0 ? `<span class="ecart gap">${delta}</span>` : 'égalité'
+      }`;
+
+  // Une question manquee deux fois n'est pas une inattention. C'est le meme
+  // raisonnement que les reflexes tenaces, applique a un montant.
+  const surSeries = new Map();
+  for (const s of series) for (const id of s.manques ?? []) surSeries.set(id, (surSeries.get(id) ?? 0) + 1);
+  const tenaces = [...surSeries.entries()]
+    .filter(([, n]) => n >= 2)
+    .sort((a, b) => b[1] - a[1])
+    .map(([id, n]) => ({ n, q: questions.find((x) => x.id === id) }))
+    .filter((x) => x.q);
+
+  const detail = (r) => {
+    const q = questions.find((x) => x.id === r.id);
+    const v = VERDICTS[r.verdict];
+    return `
+      <div class="chiffre-bilan">
+        <div class="row">
+          <span class="hint">${esc(q?.question ?? r.id)}</span>
+          <span class="ecart ${v.classe}" style="flex:none">${esc(v.libelle)}</span>
+        </div>
+        <p class="hint faint" style="margin-top:4px">
+          Tu as dit ${esc(montreChiffre(r.donne, q?.unite))}, c'est
+          <strong>${esc(montreChiffre(r.exact, q?.unite))}</strong>.
+        </p>
+      </div>`;
+  };
+
+  return `
+    <div class="card">
+      <header>
+        <h2>Bilan</h2>
+        <span class="hint">${exacts} exact${exacts > 1 ? 's' : ''} sur ${total}, ${progression}</span>
+      </header>
+
+      <div class="grid cols-3" style="margin-top:4px">
+        <div class="card stat"><span class="label">Exacts</span><span class="value">${exacts}</span><span class="note">au centime</span></div>
+        <div class="card stat"><span class="label">Approchés</span><span class="value">${approches}</span><span class="note">justes, sans le tranchant</span></div>
+        <div class="card stat"><span class="label">Faux</span><span class="value">${total - exacts - approches}</span><span class="note">à revoir</span></div>
+      </div>
+
+      ${rates.length === 0
+        ? '<p class="hint" style="margin-top:16px">Tout au centime. C\'est le niveau auquel un chiffre devient une preuve.</p>'
+        : `<h3 style="margin-top:22px">Ce qui n'est pas tombé juste</h3>
+           <div style="margin-top:10px">${rates.map(detail).join('')}</div>`}
+
+      ${tenaces.length
+        ? `<h3 style="margin-top:22px">Ce qui résiste d'une série à l'autre</h3>
+           <p class="hint faint">Sur ${series.length} série${series.length > 1 ? 's' : ''} enregistrée${series.length > 1 ? 's' : ''}.</p>
+           <div style="margin-top:10px">${tenaces.map(({ n, q }) => `
+             <div class="row" style="padding:9px 0;border-top:1px solid var(--trait)">
+               <span class="hint">${esc(q.question)}</span>
+               <span class="ecart gap" style="flex:none">${n} séries</span>
+             </div>`).join('')}</div>
+           <p class="hint faint" style="margin-top:14px">
+             Un montant qu'on manque deux fois ne s'apprendra pas en le relisant une troisième.
+             Écris-le à la main, c'est la seule méthode qui tienne la veille d'un entretien.
+           </p>`
+        : ''}
+
+      <div class="actions-row" style="margin-top:20px">
+        <button class="btn primary" data-role="chi-recommencer">Refaire la série</button>
+      </div>
+    </div>`;
+}
+
+function vueChiffres() {
+  const { retenues, ecartees } = questionsChiffres();
+  if (!retenues.length) {
+    return '<p class="empty">Aucune question ne trouve sa réponse dans le dossier. Renseigne d\'abord ta rémunération et ta cible.</p>';
+  }
+
+  const x = ent().chiffres;
+  if (x.i >= retenues.length) return bilanChiffres(x.reponses, retenues);
+
+  const q = retenues[x.i];
+  const r = x.verdict ? x.reponses.at(-1) : null;
+  const v = r ? VERDICTS[r.verdict] : null;
+  const exacts = x.reponses.filter((y) => y.verdict === 'exact').length;
+
+  return `
+    <div class="card">
+      <header>
+        <h2>Les chiffres</h2>
+        <span class="entete-droite">
+          <span class="hint">${x.i + 1} sur ${retenues.length}, ${exacts} exact${exacts > 1 ? 's' : ''}</span>
+          ${x.i > 0 || x.verdict
+            ? '<button class="btn recommencer" data-role="chi-recommencer">Redémarrer</button>'
+            : ''}
+        </span>
+      </header>
+
+      <p class="hint faint" style="margin-top:-4px">
+        Aucune réponse n'est écrite dans le quiz. Chaque question pointe vers ton dossier, la valeur
+        en est lue à l'affichage, donc elle ne peut pas être fausse sans que le dossier le soit.
+        ${ecartees ? `<br>${ecartees} question${ecartees > 1 ? 's' : ''} écartée${ecartees > 1 ? 's' : ''}, leur valeur n'est pas renseignée.` : ''}
+      </p>
+
+      <div class="exo">
+        <p class="exo-titre">${esc(q.question)}</p>
+
+        <div class="chiffre-saisie">
+          <input id="saisie-chiffre" type="text" inputmode="decimal" autocomplete="off"
+            placeholder="${q.unite === 'pct' ? 'en pourcentage' : 'en euros, au centime'}"
+            value="${esc(x.saisie)}" aria-label="Ta réponse"${x.verdict ? ' disabled' : ''}>
+          <span class="chiffre-unite">${q.unite === 'pct' ? '%' : '€'}</span>
+          ${x.verdict ? '' : '<button class="btn primary" data-role="chi-valider">Valider</button>'}
+        </div>
+
+        ${r ? `
+          <div class="chiffre-verdict ${r.verdict}">
+            <p class="chiffre-titre">
+              <span class="chiffre-signe" aria-hidden="true">${v.signe}</span>
+              <strong>${esc(v.libelle)}.</strong>
+              ${r.verdict === 'exact' ? '' : `C'est <strong>${esc(montreChiffre(r.exact, q.unite))}</strong>, tu as dit ${esc(montreChiffre(r.donne, q.unite))}.`}
+            </p>
+            <p class="hint">${esc(q.pourquoi)}</p>
+            <p class="hint faint chiffre-src">Source, ${esc(q.source)}</p>
+          </div>
+          <div class="actions-row">
+            <button class="btn primary" data-role="chi-suivant">
+              ${x.i + 1 >= retenues.length ? 'Voir le bilan' : 'Suivant'}
+            </button>
+          </div>` : '<p class="hint faint" style="margin-top:10px">Entrée pour valider.</p>'}
+      </div>
+    </div>`;
+}
+
 function vueReflexes() {
   const e = ent();
   const situations = state.exercices?.situations ?? [];
@@ -1498,7 +1775,199 @@ const pct = (n) => `${n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maxi
 // que "POS 1-1" et "Position 1-1" ne comptent pas pour deux paliers differents.
 const classe = (fiche) => `${String(fiche.position).replace(/^\D+/, '').replace('-', '.')} / ${fiche.coefficient}`;
 
-function vueRemuneration() {
+/* ----------------------------------------------- grille d'acceptation ----
+   Elle repond a une seule question : quand la reponse tombera, que vaut ce
+   montant et qu'est-ce que j'en fais. Decidee A FROID, parce qu'une decision
+   prise dans l'emotion du jour J ne tient pas. C'est la faute la plus commune
+   de tout l'exercice, accepter en quatre mots une proposition qu'on avait
+   decide de refuser.
+
+   AUCUN pourcentage n'est stocke dans data/acceptation.json, ils sont tous
+   recalcules ici depuis la base. Une base qui change met la grille a jour
+   toute seule, et deux chiffres ne peuvent pas diverger.
+
+   Une seule source pour les deux vues, Remuneration et Engagements.          */
+
+function paliersAcceptation() {
+  const a = state.acceptation;
+  if (!a?.paliers?.length || a.base_mensuelle == null) return null;
+  const base = a.base_mensuelle;
+  return {
+    base,
+    attendu: a.attendu_le,
+    source: a.source_attendu,
+    paliers: a.paliers.map((p) => ({
+      ...p,
+      tauxMin: (p.min / base) * 100,
+      tauxMax: p.max == null ? null : (p.max / base) * 100,
+      salaireMin: base + p.min,
+      salaireMax: p.max == null ? null : base + p.max,
+    })),
+  };
+}
+
+// Le premier palier non nul part d'un centime, pour ne pas recouvrir le refus
+// sec. Ce centime est une precaution d'arithmetique, pas une information : a
+// l'ecran il se lit « jusqu'a », sinon la ligne s'ouvre sur un 0,01 qui
+// n'apprend rien et ralentit la lecture.
+const premierNonNul = (p) => p.min <= 0.01 && p.max != null && p.max > 0;
+
+// La fourchette telle qu'elle s'entendra : une hausse mensuelle brute, jamais
+// un salaire. C'est la grandeur dans laquelle une reponse s'annonce.
+function fourchette(p) {
+  if (p.max === 0) return 'Rien';
+  if (p.max == null) return `${eur2(p.min)} et au-delà`;
+  if (premierNonNul(p)) return `jusqu'à ${eur2(p.max)}`;
+  return `${eur2(p.min)} à ${eur2(p.max)}`;
+}
+
+function fourchetteTaux(p) {
+  if (p.max === 0) return '0 %';
+  if (p.tauxMax == null) return `${pct(p.tauxMin)} et plus`;
+  if (premierNonNul(p)) return `jusqu'à ${pct(p.tauxMax)}`;
+  return `${dec(p.tauxMin, 2)} à ${pct(p.tauxMax)}`;
+}
+
+// Le salaire auquel la fourchette aboutit. La hausse est ce qu'on t'annoncera,
+// le salaire est ce que tu toucheras.
+function soit(p) {
+  if (p.max === 0 || p.max == null) return `soit ${eur2(p.salaireMin)}`;
+  if (premierNonNul(p)) return `soit jusqu'à ${eur2(p.salaireMax)}`;
+  return `soit ${eur2(p.salaireMin)} à ${eur2(p.salaireMax)}`;
+}
+
+function joursJusqua(date) {
+  const jour = 86400000;
+  return Math.round((new Date(`${date}T00:00:00`) - new Date(`${aujourdhui()}T00:00:00`)) / jour);
+}
+
+// Le pivot de la grille, la bande qui s'ouvre au plancher absolu. En dessous,
+// l'engagement n'est pas solde meme dans sa lecture la plus basse, donc aucune
+// reponse ne s'accepte comme un solde de tout compte. Le generateur donne
+// toujours l'identifiant p4 a cette bande, et ne la produit pas si le plancher
+// absolu n'est pas renseigne.
+const indexPivot = (paliers) => paliers.findIndex((p) => p.id === 'p4');
+
+function grilleAcceptation() {
+  const g = paliersAcceptation();
+
+  // Tant que les montants ne sont pas saisis, on dit ce que cette grille sera
+  // plutot que de ne rien afficher. Un ecran vide n'explique pas ce qui manque.
+  if (!g) {
+    return `
+    <div class="card">
+      <header><h2>Ce que je fais de la réponse</h2><span class="hint">à produire</span></header>
+      <p class="hint">
+        Cette grille dira, palier par palier, ce que vaut chaque réponse possible et ce que tu en fais.
+        Elle se décide <strong>à froid</strong>, avant que la réponse n'arrive, parce qu'une décision prise
+        sur le moment ne tient pas.
+      </p>
+      <p class="hint faint" style="margin-top:10px">
+        Renseigne tes montants dans <code>data/negociation.json</code>, puis lance
+        <code>node outils/faire-acceptation.mjs</code>. Les textes des huit paliers sont déjà écrits,
+        relis-les et mets-y tes mots.
+      </p>
+    </div>`;
+  }
+
+  const pivot = indexPivot(g.paliers);
+
+  const lignes = g.paliers
+    .map((p, i) => `
+      <tr class="${i === pivot ? 'pivot' : ''}">
+        <td data-col="Fourchette">
+          <strong>${esc(fourchette(p))}</strong>
+          <span class="faint">${soit(p)}</span>
+        </td>
+        <td data-col="En pourcentage" class="chiffre">${esc(fourchetteTaux(p))}</td>
+        <td data-col="Réaction" class="reaction">
+          <span class="emo" role="img" aria-label="${esc(p.verdict ?? '')}">${p.emoji ?? ''}</span>
+          <span class="faint">${esc(p.verdict ?? '')}</span>
+        </td>
+        <td data-col="Commentaire">${esc(p.commentaire ?? '')}</td>
+        <td data-col="Ce que tu fais">
+          ${esc(p.action ?? '')}
+          ${p.phrase ? `<span class="dire">« ${esc(p.phrase)} »</span>` : ''}
+        </td>
+      </tr>`)
+    .join('');
+
+  const reste = g.attendu ? joursJusqua(g.attendu) : null;
+  const seuil = pivot >= 0 ? g.paliers[pivot] : null;
+
+  return `
+    <div class="card">
+      <header>
+        <h2>Ce que je fais de la réponse</h2>
+        <span class="hint">décidé avant de la connaître</span>
+      </header>
+      <p class="hint" style="margin-bottom:14px">
+        ${g.paliers.length} paliers, de rien du tout à ta demande entière. <strong>Chaque frontière est un
+        chiffre de ton dossier</strong>, aucune n'est choisie. Les pourcentages sont recalculés depuis
+        ${eur2(g.base)}, ils ne sont écrits nulle part.
+      </p>
+      <div class="table-boite">
+        <table class="grille-acceptation">
+          <thead>
+            <tr>
+              <th scope="col">Fourchette, hausse brute mensuelle</th>
+              <th scope="col">En pourcentage</th>
+              <th scope="col">Réaction</th>
+              <th scope="col">Commentaire</th>
+              <th scope="col">Ce que tu fais</th>
+            </tr>
+          </thead>
+          <tbody>${lignes}</tbody>
+        </table>
+      </div>
+      ${seuil ? `<p class="hint" style="margin-top:16px">
+        <strong>La ligne qui compte est celle du plancher absolu.</strong> En dessous de
+        ${eur2(seuil.min)} par mois, l'engagement n'est pas soldé, même dans sa lecture la plus basse.
+        Rien ne s'y accepte comme un solde de tout compte, seulement comme un premier palier, avec une
+        seconde date écrite.
+      </p>` : ''}
+      ${g.attendu ? `<p class="hint faint" style="margin-top:10px">
+        Réponse attendue le ${dateCourte(g.attendu)}${reste > 0 ? `, dans ${reste} jour${reste > 1 ? 's' : ''}` : ''}.
+        ${esc(g.source ?? '')}
+      </p>` : ''}
+    </div>`;
+}
+
+// Le rappel dans Engagements. Il ne recopie rien : il lit la meme source que la
+// grille complete. C'est ici qu'on ouvrira le cockpit le jour ou la reponse
+// tombera, d'ou le renvoi.
+function rappelAcceptation() {
+  const g = paliersAcceptation();
+  if (!g?.attendu) return '';
+
+  const pivot = indexPivot(g.paliers);
+  const seuil = pivot >= 0 ? g.paliers[pivot] : null;
+  const reste = joursJusqua(g.attendu);
+
+  return `
+    <div class="card attente">
+      <header>
+        <h2>La réponse est attendue</h2>
+        <span class="hint">${reste > 0 ? `dans ${reste} jour${reste > 1 ? 's' : ''}` : 'échéance passée'}</span>
+      </header>
+      <p class="hint">Réponse annoncée <strong>au plus tard le ${dateCourte(g.attendu)}</strong>.</p>
+      ${seuil ? `<p class="hint" style="margin-top:12px">
+        <strong>La décision est déjà prise.</strong> ${g.paliers.length} paliers ont été écrits avant de
+        connaître la réponse, pour qu'elle ne se négocie pas à chaud. Le pivot est à
+        ${eur2(seuil.min)} par mois, soit ${pct(seuil.tauxMin)} : en dessous, l'engagement n'est pas
+        soldé, et rien ne s'accepte comme un solde de tout compte.
+      </p>` : ''}
+      <p class="hint faint" style="margin-top:10px">
+        Avant de répondre quoi que ce soit, situer le montant dans la grille.
+      </p>
+      <button type="button" class="filtre" data-role="aller" data-vers="remuneration" style="margin-top:12px">
+        Ouvrir la grille complète
+      </button>
+    </div>
+`;
+}
+
+function vuePaie() {
   const p = state.paie;
   if (!p?.fiches?.length) {
     return `<div class="empty"><strong>Aucun bulletin de paie extrait.</strong><br>Cette vue reconstruit ta trajectoire de rémunération à partir de tes bulletins. Dépose-les dans <code>inbox/</code> et lance <code>/demarrer</code>. Le module <code>france</code> fournit l'extracteur de bulletins français.</div>`;
@@ -1538,7 +2007,7 @@ function vueRemuneration() {
     basePrec = { valeur: fiche.base_contractuelle };
   }
 
-  const septembre = remu.avant_octobre_2025.brut_bulletin_mensuel;
+  const septembre = remu.avant_derniere_revalorisation.brut_bulletin_mensuel;
   const avenant25 = remu.historique.find((x) => x.effet === '2025-10-01');
   const base25 = avenant25.base_annuelle / 12;
   const base26 = remu.brut_annuel_base / 12;
@@ -1607,9 +2076,10 @@ function vueRemuneration() {
 
   // Le panneau de l'impot, accole sous le principal. Il partage exactement le
   // meme axe des temps, gx, mais il a sa PROPRE echelle verticale : l'impot
-  // plafonne a 198 EUR quand le brut depasse 3 900. Sur un axe commun il serait
-  // ecrase sur la ligne du bas et n'apprendrait rien. Deux cadres plutot qu'un
-  // second axe dans le meme cadre, qui ferait mentir les proportions.
+  // prelevé a la source reste d'un ordre de grandeur sous le brut. Sur un axe
+  // commun il serait ecrase sur la ligne du bas et n'apprendrait rien. Deux
+  // cadres plutot qu'un second axe dans le meme cadre, qui ferait mentir les
+  // proportions.
   const iH = 132, iB = 26, iHaut = 220;
   const gyI = (v) => T + (1 - v / iHaut) * (iH - T - iB);
   const maxImpot = Math.max(...f.map((x) => x.impot_preleve));
@@ -1974,21 +2444,213 @@ function vueRepetitions() {
 
 /* --------------------------------------------------------------- rendu */
 
+// La remuneration, c'est la grille d'abord et les bulletins ensuite. La grille
+// ne depend d'aucun bulletin : elle doit s'afficher des que les montants sont
+// poses, c'est-a-dire bien avant qu'on ait depouille la moindre fiche de paie.
+function vueRemuneration() {
+  return grilleAcceptation() + vuePaie();
+}
+
+/* ------------------------------------------------ repetition en direct ----
+   La seance se joue ICI, pas dans un terminal, et la correction s'affiche sous
+   chaque replique. Le canal est un simple fichier, data/echange.json : la page
+   y ecrit, la session Claude Code le surveille et y repond.
+
+   AUCUN MODELE NE TOURNE SUR CETTE MACHINE. C'est la difference avec le chat
+   local retire le 24/09/2026, qui s'appuyait sur un modele installe en local :
+   celui-la pouvait inventer un montant absent du dossier, et c'est pour cela
+   qu'il est parti. Ici, celui qui joue le manager et qui corrige est une
+   personne assistee de son agent, avec le dossier sous les yeux. Le controle
+   du harnais qui refuse le retour de l'ancien chat reste donc en place, et il
+   doit y rester.
+
+   Le sondage est volontairement bete, un GET toutes les deux secondes. Il ne
+   redessine QUE si le contenu a change, sinon la zone de saisie perdrait le
+   focus a chaque tour et on ne pourrait plus ecrire.                         */
+
+let sondage = null;
+let dernierEtat = '';
+
+function lancerSondage() {
+  if (sondage) return;
+  sondage = setInterval(async () => {
+    try {
+      const frais = await (await fetch('/api/data/echange')).json();
+      const etat = JSON.stringify(frais);
+      if (etat === dernierEtat) return;
+      dernierEtat = etat;
+      state.echange = frais;
+      // La condition suit l'onglet ET le mode. En direct est un mode et non un
+      // onglet : tester le seul onglet laisserait le sondage recuperer les
+      // messages sans jamais redessiner.
+      if (ui.onglet === 'entrainement' && ui.mode.entrainement === 'direct') rendre();
+    } catch { /* le serveur n'est pas la, on retentera au tour suivant */ }
+  }, 2000);
+}
+
+function arreterSondage() {
+  if (sondage) { clearInterval(sondage); sondage = null; }
+}
+
+function vueDirect() {
+  const e = state.echange ?? { messages: [], attente: false, session: {} };
+  lancerSondage();
+
+  const bulles = (e.messages ?? [])
+    .map((m) => {
+      if (m.qui === 'correction') {
+        const lignes = [
+          m.ton ? `<dt>Ton</dt><dd>${esc(m.ton)}</dd>` : '',
+          m.formulation ? `<dt>Formulation</dt><dd>${esc(m.formulation)}</dd>` : '',
+          m.risque ? `<dt>Risque</dt><dd>${esc(m.risque)}</dd>` : '',
+          m.mieux ? `<dt>Mieux</dt><dd class="mieux">${esc(m.mieux)}</dd>` : '',
+        ].join('');
+        return `<details class="correction"><summary>Correction${m.faute ? ` <span class="faute">faute ${esc(m.faute)}</span>` : ''}</summary><dl class="kv">${lignes}</dl></details>`;
+      }
+      const qui = m.qui === 'moi' ? 'moi' : 'manager';
+      return `<div class="echange ${qui}">
+        <span class="echange-qui">${qui === 'moi' ? 'Toi' : esc(dit.manager())}</span>
+        <p>${esc(m.texte ?? '')}</p>
+      </div>`;
+    })
+    .join('');
+
+  // Il ecrit. La bulle se met la ou sa reponse va tomber, et elle porte son sens
+  // en toutes lettres pour les lecteurs d'ecran, l'animation n'etant qu'un
+  // habillage.
+  const tape = e.attente
+    ? `<div class="echange manager tape" role="status" aria-label="${esc(dit.manager())} est en train d'écrire">
+        <span class="echange-qui">${esc(dit.manager())}</span>
+        <p><i></i><i></i><i></i></p>
+      </div>`
+    : '';
+
+  const vide = !(e.messages ?? []).length;
+
+  return `
+    <div class="card">
+      <header>
+        <h2>Répétition en direct</h2>
+        <span class="hint">difficulté ${esc(e.session?.difficulte ?? 'réaliste')}</span>
+      </header>
+      <p class="hint">Tu écris ici, Claude Code joue ${esc(dit.manager())} et répond dans la seconde ou deux.
+        Rien ne sort de ta machine, le canal est un fichier.</p>
+    </div>
+
+    <div class="card">
+      ${vide
+        ? (tape || `<div class="empty"><strong>La séance n'a pas commencé.</strong><br>
+            Écris ta première réplique ci-dessous, ou demande à Claude de lancer l'entretien.</div>`)
+        : `<div class="rejeu">${bulles}${tape}</div>`}
+
+      <div class="saisie">
+        <textarea id="saisie-direct" rows="3" placeholder="Ta réponse…"
+          aria-label="Ta réponse"${e.attente ? ' disabled' : ''}></textarea>
+        <div class="saisie-barre">
+          <button type="button" class="btn" data-role="envoyer-direct"${e.attente ? ' disabled' : ''}>Envoyer</button>
+          <button type="button" class="btn secondaire" data-role="vider-direct">Nouvelle séance</button>
+          <span class="hint">Ctrl+Entrée pour envoyer</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+// L'envoi. On ajoute la replique, on leve le drapeau d'attente, et on ecrit.
+// C'est le passage de attente a true qui reveille Claude : tout le protocole
+// tient dans un drapeau et un tableau.
+async function envoyerDirect() {
+  const zone = document.getElementById('saisie-direct');
+  const texte = (zone?.value ?? '').trim();
+  if (!texte) return;
+
+  const e = state.echange ?? { messages: [], session: {} };
+  e.session = e.session ?? {};
+  if (!e.session.id) {
+    e.session.id = `d${new Date().toISOString().slice(0, 10)}-${Math.random().toString(36).slice(2, 6)}`;
+    e.session.active = true;
+    e.session.difficulte = e.session.difficulte ?? 'réaliste';
+  }
+  e.messages = [...(e.messages ?? []), { qui: 'moi', texte, at: new Date().toISOString() }];
+  e.attente = true;
+
+  state.echange = e;
+  dernierEtat = '';
+  rendre();
+  await sauver('echange');
+}
+
+// Le canal est un tampon, pas une archive : il ne garde qu'une seance a la
+// fois. outils/archiver-direct.mjs en fait une entree durable dans
+// repetitions.json avant d'en relancer une.
+async function viderDirect() {
+  state.echange = {
+    _doc: state.echange?._doc,
+    session: { id: null, difficulte: state.echange?.session?.difficulte ?? 'réaliste', active: false },
+    attente: false,
+    messages: [],
+  };
+  dernierEtat = '';
+  rendre();
+  await sauver('echange');
+}
+
+/* ------------------------------------------------- onglets a modes */
+
+// Trois onglets hebergent plusieurs vues. Chacun rend une rangee de modes, puis
+// delegue. Les vues absorbees ne sont pas reecrites : c'est exactement le meme
+// code, appele depuis un onglet qui en porte plusieurs.
+
+// La rangee de modes reprend le composant de filtres deja ecrit ailleurs, donc
+// il n'y a rien de neuf a styler.
+function rangeeModes(onglet) {
+  const modes = MODES[onglet] ?? [];
+  const actif = ui.mode[onglet] ?? modes[0]?.id;
+  return `<div class="card"><div class="filtres" role="group" aria-label="Mode d'affichage">${modes
+    .map((m) => `<button type="button" class="filtre${m.id === actif ? ' actif' : ''}" data-role="mode" data-onglet="${onglet}" data-mode="${m.id}" aria-pressed="${m.id === actif}">${esc(m.libelle)}</button>`)
+    .join('')}</div></div>`;
+}
+
+// Plan d'action. Par horizon, la lecture de fond. Par echeance, la lecture de
+// la semaine, celle qui portait le nom de Reste a faire.
+function vuePlanAction() {
+  const mode = ui.mode.actions ?? 'horizon';
+  return rangeeModes('actions') + (mode === 'echeance' ? vueResteAFaire() : vueActions());
+}
+
+// Entrainement. On s'entraine, puis on relit : deux faces d'une seule activite,
+// la ou deux onglets obligeaient a savoir d'avance lequel ouvrir.
+function vueEntrainement() {
+  const mode = ui.mode.entrainement ?? 'reflexes';
+  if (mode === 'chiffres') return rangeeModes('entrainement') + vueChiffres();
+  if (mode === 'direct') return rangeeModes('entrainement') + vueDirect();
+  if (mode === 'seances') return rangeeModes('entrainement') + vueRepetitions();
+  return rangeeModes('entrainement') + vueReflexes();
+}
+
+// Les deux surfaces de lecture. Meme nature de contenu, seul le support
+// differe : des fichiers sur disque d'un cote, des entrees JSON de l'autre.
+function vueRessourcesLues() {
+  const mode = ui.mode.notes ?? 'notes';
+  return rangeeModes('notes') + (mode === 'discussions' ? vueDiscussions() : vueNotes());
+}
+
 function rendre() {
+  // Quitter le mode coupe le sondage. Sans cette ligne, ouvrir En direct une
+  // fois laisserait la page interroger le serveur toutes les deux secondes
+  // jusqu'a la fermeture de l'onglet.
+  if (!(ui.onglet === 'entrainement' && ui.mode.entrainement === 'direct')) arreterSondage();
+
   const vues = {
-    reste: vueResteAFaire,
     tableau: vueTableau,
-    actions: vueActions,
+    actions: vuePlanAction,
     competences: vueCompetences,
     realisations: vueRealisations,
     engagements: vueEngagements,
     remuneration: vueRemuneration,
     offres: vueOffres,
-    entrainement: vueReflexes,
-    repetitions: vueRepetitions,
+    entrainement: vueEntrainement,
     cible: vueCible,
-    notes: vueNotes,
-    discussions: vueDiscussions,
+    notes: vueRessourcesLues,
     inbox: vueInbox,
   };
   document.getElementById('view').innerHTML = vues[ui.onglet]();
@@ -1996,7 +2658,7 @@ function rendre() {
 }
 
 function rendreOnglets() {
-  // Neuf entrees a plat se lisent mal, on les groupe avec un intitule discret.
+  // Onze entrees a plat se lisent mal, on les groupe avec un intitule discret.
   const groupes = [...new Set(ONGLETS.map((o) => o.groupe))];
   document.getElementById('tabs').innerHTML = groupes
     .map(
@@ -2029,6 +2691,19 @@ async function ouvrirNote(nom) {
   rendre();
 }
 
+document.getElementById('view').addEventListener('keydown', (e) => {
+  if (e.target?.id === 'saisie-direct' && e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    envoyerDirect();
+  }
+  // Un champ d'une ligne, donc Entree seule : rien d'autre a faire avec cette
+  // touche ici, et une validation au clavier garde le rythme du quiz.
+  if (e.target?.id === 'saisie-chiffre' && e.key === 'Enter') {
+    e.preventDefault();
+    document.querySelector('[data-role="chi-valider"]')?.click();
+  }
+});
+
 document.getElementById('tabs').addEventListener('click', (e) => {
   const bouton = e.target.closest('[data-onglet]');
   if (!bouton) return;
@@ -2043,6 +2718,24 @@ document.getElementById('view').addEventListener('click', async (e) => {
   const cible = e.target.closest('[data-role]');
   if (!cible) return;
   const role = cible.dataset.role;
+
+  // Le handler des onglets est porte par #tabs, un bouton place dans le contenu
+  // ne l'atteint donc pas. Ce role permet a une vue de renvoyer vers une autre.
+  if (role === 'aller') {
+    ui.onglet = cible.dataset.vers;
+    window.scrollTo({ top: 0 });
+    return rendre();
+  }
+
+  if (role === 'envoyer-direct') { await envoyerDirect(); return; }
+  if (role === 'vider-direct') { await viderDirect(); return; }
+
+  // Changement de mode dans un onglet qui en heberge plusieurs.
+  if (role === 'mode') {
+    ui.mode[cible.dataset.onglet] = cible.dataset.mode;
+    rendre();
+    return;
+  }
 
   // Choix de la repetition a rejouer. Aucune ecriture, on change d affichage.
   if (role === 'repetition') {
@@ -2065,6 +2758,31 @@ document.getElementById('view').addEventListener('click', async (e) => {
 
   if (role === 'ent-suivant') {
     Object.assign(ent().exercice, { i: ent().exercice.i + 1, ordre: null, choisi: null });
+    return rendre();
+  }
+
+  // La saisie est relue depuis le champ et non depuis l'etat : c'est le champ
+  // qui fait foi, l'etat ne sert qu'a la reafficher apres le rendu.
+  if (role === 'chi-valider') {
+    const x = ent().chiffres;
+    if (x.verdict) return;
+    const { retenues } = questionsChiffres();
+    const q = retenues[x.i];
+    const donne = lireNombre(document.getElementById('saisie-chiffre')?.value);
+    if (donne === null) return toast('Entre un montant, même approximatif.', 'error');
+    x.saisie = String(donne);
+    x.verdict = verdictChiffre(donne, q.exact, q.unite);
+    x.reponses.push({ id: q.id, donne, exact: q.exact, verdict: x.verdict });
+    return rendre();
+  }
+
+  if (role === 'chi-suivant') {
+    Object.assign(ent().chiffres, { i: ent().chiffres.i + 1, verdict: null, saisie: '' });
+    return rendre();
+  }
+
+  if (role === 'chi-recommencer') {
+    Object.assign(ent().chiffres, { i: 0, verdict: null, saisie: '', reponses: [], enregistree: false });
     return rendre();
   }
 
@@ -2224,14 +2942,14 @@ document.getElementById('view').addEventListener('submit', async (e) => {
 
 async function demarrer() {
   try {
-    const [config, profil, cible, actions, competences, realisations, engagements, offres, formulaire, entrainement, exercices, discussions, paie, repetitions] =
+    const [config, profil, cible, actions, competences, realisations, engagements, offres, formulaire, entrainement, exercices, discussions, paie, repetitions, echange, acceptation, chiffres, negociation] =
       await Promise.all(
-        ['config', 'profil', 'cible', 'actions', 'competences', 'realisations', 'engagements', 'offres', 'formulaire', 'entrainement', 'exercices', 'discussions', 'paie', 'repetitions'].map(
+        ['config', 'profil', 'cible', 'actions', 'competences', 'realisations', 'engagements', 'offres', 'formulaire', 'entrainement', 'exercices', 'discussions', 'paie', 'repetitions', 'echange', 'acceptation', 'chiffres', 'negociation'].map(
           charger,
         ),
       );
     Object.assign(state, {
-      config, profil, cible, actions, competences, realisations, engagements, offres, formulaire, entrainement, exercices, discussions, paie, repetitions,
+      config, profil, cible, actions, competences, realisations, engagements, offres, formulaire, entrainement, exercices, discussions, paie, repetitions, echange, acceptation, chiffres, negociation,
     });
 
     try {

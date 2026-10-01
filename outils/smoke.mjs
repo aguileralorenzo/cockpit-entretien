@@ -15,6 +15,9 @@ function noeud(id) {
       dataset: {},
       hidden: true,
       textContent: '',
+      // Le quiz des chiffres lit son champ par getElementById, le stub doit
+      // donc pouvoir porter une valeur comme un vrai input.
+      value: '',
       __html: '',
       __listeners: {},
       set innerHTML(v) { this.__html = v; if (this.id === 'view') rendus.push(v); },
@@ -90,10 +93,31 @@ const faux = (dataset, remonte = {}) => ({
 });
 
 console.log('Rendu des onglets :');
-verifier('reste'); // onglet par defaut jusqu au 29/09
-for (const onglet of ['tableau', 'actions', 'entrainement', 'repetitions', 'competences', 'realisations', 'engagements', 'remuneration', 'offres', 'cible', 'notes', 'discussions', 'inbox']) {
+for (const onglet of ['tableau', 'actions', 'entrainement', 'competences', 'realisations', 'engagements', 'remuneration', 'offres', 'cible', 'notes', 'inbox']) {
   await tabs.declencher('click', faux({ onglet }));
   verifier(onglet);
+}
+
+console.log('\nModes internes :');
+const MODES_A_TESTER = [
+  ['actions', ['horizon', 'echeance']],
+  ['entrainement', ['reflexes', 'chiffres', 'direct', 'seances']],
+  ['notes', ['notes', 'discussions']],
+];
+for (const [onglet, modes] of MODES_A_TESTER) {
+  await tabs.declencher('click', faux({ onglet }));
+  for (const mode of modes) {
+    await vue.declencher('click', faux({ role: 'mode', onglet, mode }));
+    verifier(`${onglet}/${mode}`);
+  }
+}
+
+// Le parcours des modes laisse chaque onglet sur son DERNIER mode. Sans cette
+// remise, l'exercice a choix plus bas tournerait sur la vue des seances et
+// echouerait sans que la faute soit dans le code teste. Un harnais qui ne remet
+// pas ce qu'il a touche est pire qu'un harnais absent.
+for (const [onglet, modes] of MODES_A_TESTER) {
+  await vue.declencher('click', faux({ role: 'mode', onglet, mode: modes[0] }));
 }
 
 /* -- exercice a choix, la serie entiere ---------------------------------- */
@@ -106,6 +130,16 @@ console.log(`\nReflexes, ${exos.situations.length} situations :`);
 
 await tabs.declencher('click', faux({ onglet: 'entrainement' }));
 if (!vue.innerHTML.includes('choix-liste')) erreurs.push('les reflexes ne rendent pas');
+// Le direct par canal fichier rend bien sa zone de saisie, et SANS reintroduire
+// l'ancien chat local : ce sont deux choses differentes, l'une interrogeait un
+// modele installe sur la machine, l'autre ecrit dans un fichier que relit une
+// personne. Le controle ci-dessous distingue les deux.
+await vue.declencher('click', faux({ role: 'mode', onglet: 'entrainement', mode: 'direct' }));
+if (!vue.innerHTML.includes('saisie-direct')) erreurs.push('le direct ne rend pas sa zone de saisie');
+else if (/ollama|chat-saisie|chat-pied/i.test(vue.innerHTML)) erreurs.push('le direct reintroduit l ancien chat local');
+else console.log('  direct : canal fichier rendu, aucun vestige du chat local');
+await vue.declencher('click', faux({ role: 'mode', onglet: 'entrainement', mode: 'reflexes' }));
+
 // bulle-manager est legitime, l'exercice s'en sert pour la replique du manager.
 if (/ollama|chat-saisie|chat-pied/i.test(vue.innerHTML)) erreurs.push('du chat subsiste dans la vue');
 
@@ -136,16 +170,20 @@ const bilanRate = await parcourir(false);
 if (!bilanRate.includes('fois')) erreurs.push('le bilan ne recapitule pas les fautes');
 else console.log('  serie tout faux : fautes recapitulees et classees');
 
-// Aucun montant ne doit apparaitre dans une bonne reponse hors de ceux du dossier.
-const AUTORISES = ['3 550', '3 014', '38 242', '42 600', '45 000', '40 000', '43 700', '3 275', '5 460'];
+// Les situations livrees avec le gabarit sont universelles : elles parlent de
+// « ton montant » et jamais d'un nombre. Une bonne reponse qui cite un montant
+// est donc soit une fuite de donnees personnelles, soit un chiffre invente.
+//
+// Les situations ajoutees par /demarrer a partir du dossier de l'adoptant sont
+// exclues de ce controle : elles ont le droit de citer SES chiffres.
 for (const s of exos.situations) {
   const bon = s.options.find((o) => o.bon);
-  for (const m of bon.texte.match(/\b\d{1,3}\s\d{3}\b/g) ?? []) {
-    if (!AUTORISES.includes(m)) erreurs.push(`${s.id} : montant hors dossier dans la bonne reponse, "${m}"`);
-  }
+  if (!s.id.startsWith('s')) continue; // les situations livrees sont s1..sN
+  const montants = bon.texte.match(/\b\d{1,3}[\s\u00a0\u202f]\d{3}\b|\b\d{4,6}\s*(?:€|EUR\b)/g) ?? [];
+  for (const m of montants) erreurs.push(`${s.id} : montant dans une bonne reponse livree, "${m}"`);
   if (s.options.filter((o) => o.bon).length !== 1) erreurs.push(`${s.id} : pas exactement une bonne reponse`);
 }
-console.log('  aucun montant hors dossier dans les bonnes reponses');
+console.log('  aucun montant dans les bonnes reponses livrees');
 
 /* -- persistance des series ---------------------------------------------- */
 

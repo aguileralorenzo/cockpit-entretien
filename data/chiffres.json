@@ -1,0 +1,128 @@
+{
+  "_doc": "Les questions du mode Les chiffres. Aucune REPONSE n'est ecrite ici, et c'est tout le point : chaque question porte un POINTEUR vers l'endroit du dossier ou la valeur se trouve, l'application le resout a l'affichage. Une valeur qui n'est pas recopiee ne peut pas diverger, et si ton dossier change le quiz suit tout seul. Une question dont le pointeur ne resout pas est retiree de la serie plutot que posee sans reponse : sur un dossier vide, le quiz est donc simplement vide.",
+  "_langage": "valeur accepte trois formes. { chemin } lit une valeur du dossier, les segments sont separes par des points et un segment numerique entre dans un tableau. { moins: [a, b] } soustrait. { fois: [a, facteur] } multiplie. a et b sont des chemins ou des nombres.",
+  "_bareme": "Exact, au centime. Approche, a un euro pres ou a un dixieme de point pres : juste, mais sans le tranchant. Faux au-dela. La distinction n'est pas une coquetterie, un montant arrondi reste vrai et cesse d'etre une preuve. En face, quelqu'un qui lit vite un calcul releve une approximation sans y penser.",
+  "_a_toi": "Ces questions sont universelles. Ajoute les tiennes : tout chiffre que tu devras sortir sans hesiter merite une ligne ici, et toute ligne doit pointer vers le dossier plutot que porter sa reponse.",
+  "questions": [
+    {
+      "id": "c1",
+      "question": "Ton salaire actuel, au centime",
+      "valeur": { "chemin": "negociation.montants.actuel" },
+      "unite": "eur",
+      "pourquoi": "Le point de depart de toute proposition qu'on te fera, et la base sur laquelle se calcule chaque pourcentage qu'on t'annoncera. L'hesiter devant la personne en face coute plus cher que de se tromper.",
+      "source": "negociation.montants.actuel"
+    },
+    {
+      "id": "c2",
+      "question": "Ton salaire juste avant la derniere revalorisation",
+      "valeur": { "chemin": "profil.remuneration.avant_derniere_revalorisation.brut_bulletin_mensuel" },
+      "unite": "eur",
+      "pourquoi": "La reference a partir de laquelle se calcule ce que tu as reellement obtenu. Les centimes font comprendre que tu connais ton dossier et pas seulement ton grief.",
+      "source": "Le bulletin precedant la derniere revalorisation"
+    },
+    {
+      "id": "c3",
+      "question": "Ce que tu as reellement obtenu entre les deux, par mois",
+      "valeur": { "moins": ["negociation.montants.actuel", "profil.remuneration.avant_derniere_revalorisation.brut_bulletin_mensuel"] },
+      "unite": "eur",
+      "pourquoi": "C'est le chiffre qui se compare a ce qui avait ete promis, et l'ecart entre les deux est tout ton dossier. Formule-le en euros et non en pourcentages : un pourcentage ouvre un debat d'interpretation, un euro n'en ouvre aucun.",
+      "source": "Difference entre les deux bulletins"
+    },
+    {
+      "id": "c4",
+      "question": "Le montant que tu annonces, un seul chiffre",
+      "valeur": { "chemin": "negociation.montants.demande" },
+      "unite": "eur",
+      "pourquoi": "Un seul chiffre, jamais une fourchette : en face, on entend toujours le bas. Celui-la doit sortir sans hesitation, une hesitation sur son propre montant se lit comme un montant negociable.",
+      "source": "negociation.montants.demande"
+    },
+    {
+      "id": "c5",
+      "question": "La hausse mensuelle que represente ta demande",
+      "valeur": { "moins": ["negociation.montants.demande", "negociation.montants.actuel"] },
+      "unite": "eur",
+      "pourquoi": "C'est dans cette grandeur que la reponse te sera annoncee, pas en salaire. Savoir passer de l'une a l'autre de tete evite de calculer devant la personne en face.",
+      "source": "Demande moins salaire actuel"
+    },
+    {
+      "id": "c6",
+      "question": "Ta cible, celle que tu vises reellement",
+      "valeur": { "chemin": "negociation.montants.cible" },
+      "unite": "eur",
+      "pourquoi": "Entre la demande et le plancher. Elle ne se dit jamais a voix haute, elle sert a savoir si une proposition est bonne.",
+      "source": "negociation.montants.cible"
+    },
+    {
+      "id": "c7",
+      "question": "Ton plancher de repli",
+      "valeur": { "chemin": "negociation.montants.plancher" },
+      "unite": "eur",
+      "pourquoi": "Ne se dit jamais non plus. En dessous, le repli n'est pas de baisser le montant mais de l'etaler, avec deux dates ecrites.",
+      "source": "negociation.montants.plancher"
+    },
+    {
+      "id": "c8",
+      "question": "Ton plancher absolu",
+      "valeur": { "chemin": "negociation.montants.plancher_absolu" },
+      "unite": "eur",
+      "pourquoi": "La frontiere qui change la nature de la reponse et pas seulement son montant. C'est le seul seuil qui compte vraiment, et c'est celui qu'on franchit sans s'en apercevoir quand on repond a chaud.",
+      "source": "negociation.montants.plancher_absolu"
+    },
+    {
+      "id": "c9",
+      "question": "Ce qu'il te manque au minimum, par mois",
+      "valeur": { "moins": ["negociation.montants.plancher_absolu", "negociation.montants.actuel"] },
+      "unite": "eur",
+      "pourquoi": "La phrase qui porte ton entretien se termine par ce chiffre. En dessous, l'engagement n'est pas honore meme dans sa lecture la plus basse.",
+      "source": "Plancher absolu moins salaire actuel"
+    },
+    {
+      "id": "c10",
+      "question": "Ce qu'il te manque au maximum, par mois",
+      "valeur": { "moins": ["negociation.montants.plancher", "negociation.montants.actuel"] },
+      "unite": "eur",
+      "pourquoi": "L'autre borne. Tenir les deux en tete permet de ne citer qu'une fourchette fermee, que personne ne peut elargir a ta place.",
+      "source": "Plancher de repli moins salaire actuel"
+    },
+    {
+      "id": "c11",
+      "question": "Ton brut annuel de base aujourd'hui",
+      "valeur": { "chemin": "profil.remuneration.brut_annuel_base" },
+      "unite": "eur",
+      "pourquoi": "La grandeur dans laquelle les offres du marche s'expriment. Comparer un annuel a un annuel evite de se faire opposer un package contre un salaire.",
+      "source": "profil.remuneration.brut_annuel_base"
+    },
+    {
+      "id": "c12",
+      "question": "Le minimum conventionnel de ta classification actuelle",
+      "valeur": { "chemin": "cible.references_marche.grille_conventionnelle.points.0.minimum_mensuel" },
+      "unite": "eur",
+      "pourquoi": "Opposable, contrairement aux agregateurs de salaires. A connaitre surtout pour savoir de combien tu es au-dessus : c'est l'objection « tu es deja au-dessus du minimum », et elle se desamorce en rappelant qu'un minimum n'est pas un objectif.",
+      "source": "La grille de ta convention collective"
+    },
+    {
+      "id": "c13",
+      "question": "Le minimum conventionnel de la classification que tu vises",
+      "valeur": { "chemin": "cible.references_marche.grille_conventionnelle.points.1.minimum_mensuel" },
+      "unite": "eur",
+      "pourquoi": "Si honorer l'engagement te placerait au-dessus de ce plancher, tu tiens l'argument qui relie la remuneration a la classification sans reclamer celle-ci comme un du.",
+      "source": "La grille de ta convention collective"
+    },
+    {
+      "id": "c14",
+      "question": "La moyenne des augmentations annoncee par l'employeur, en pourcentage",
+      "valeur": { "chemin": "profil.remuneration.moyenne_augmentations_entreprise.taux_pct" },
+      "unite": "pct",
+      "pourquoi": "Un etalon, pas une cible. Si ton appreciation est presentee comme superieure a la moyenne, une proposition a ce niveau ou en dessous contredit cette phrase, et c'est la contradiction qui se dit, pas le chiffre.",
+      "source": "Declaration de l'employeur, a dater"
+    },
+    {
+      "id": "c15",
+      "question": "Ce qu'une offre externe devrait atteindre pour simplement egaler ta situation",
+      "valeur": { "chemin": "profil.remuneration.package.seuil_offre_externe.montant" },
+      "unite": "eur",
+      "pourquoi": "Outil de decision personnelle, JAMAIS argument de negociation. Annoncer un package global autorise l'employeur a compter un remboursement de frais comme de la remuneration.",
+      "source": "profil.remuneration.package.seuil_offre_externe"
+    }
+  ]
+}

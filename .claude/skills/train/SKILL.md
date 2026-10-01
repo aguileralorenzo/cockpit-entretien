@@ -123,6 +123,35 @@ Reste en rôle jusqu'à **pause**, **stop** ou **débrief**.
 
 ---
 
+## Jouer dans l'interface plutôt que dans le terminal
+
+L'utilisateur peut préférer l'onglet **Entraînement**, mode **En direct**. La séance s'y déroule en conversation, et la correction s'affiche dépliable sous chacune de ses répliques, à l'endroit exact où il la relira.
+
+Le protocole tient en deux champs de `data/echange.json`, un drapeau et un tableau.
+
+**Il écrit.** L'interface ajoute son message et lève `attente` à `true`. C'est ce passage qui te réveille : surveille le fichier.
+
+**Tu réponds.** Une seule commande, qui ajoute tes messages et rabaisse `attente`, ce qui rend la main à la zone de saisie.
+
+```bash
+node outils/repondre-direct.mjs '[{"qui":"manager","texte":"..."},
+  {"qui":"correction","ton":"...","formulation":"...","risque":null,"mieux":"..."}]'
+```
+
+Réponds **dans la seconde ou deux**. Pendant que `attente` est à `true`, l'interface affiche trois points qui se soulèvent, à l'endroit où ta réponse va tomber. Un silence long y ressemble à une panne.
+
+**Le canal est un tampon, pas une archive.** Il ne garde qu'une séance à la fois, et le bouton « Nouvelle séance » l'efface. Avant d'en relancer une, archive :
+
+```bash
+node outils/archiver-direct.mjs [difficulté]
+```
+
+Cela en fait une entrée durable dans `data/repetitions.json`, relisible dans le mode **Les séances**. Une séance non archivée est une séance perdue.
+
+**Aucun modèle ne tourne sur la machine de l'utilisateur**, et c'est la raison d'être de ce montage. Celui qui joue le manager et qui corrige, c'est toi, avec le dossier sous les yeux. Un modèle local inventerait des montants, et c'est précisément la faute que tout le projet cherche à rendre impossible.
+
+---
+
 ## Enregistrer la séance, au fil de l'eau
 
 **Tu écris la transcription dans `data/repetitions.json`.** Le terminal efface, l'onglet Répétitions garde, et c'est là que la valeur se trouve : une faute qu'on retrouve d'une séance à l'autre n'est pas une inattention, et on ne le voit qu'en comparant.
@@ -176,6 +205,20 @@ Le verdict en une phrase, serait-il sorti avec quelque chose d'écrit et quoi. L
 **Aucun montant absent de `data/negociation.json`.** Le contrôle refuse la page sinon.
 
 **Aucun nom propre.** La page peut être publiée, et `data/config.json.identite` liste ce qui doit en être absent. Cite les répliques en neutralisant les noms.
+
+---
+
+## Après un entretien réel
+
+Quand il revient d'un vrai entretien et te raconte ce qui s'y est dit, deux choses sont à faire dans cet ordre, et la seconde est mécanique.
+
+**Consigner.** Une entrée dans `data/engagements.json` par engagement obtenu, avec sa date, sa source, et surtout **son échéance**. C'est l'étape qui manque toujours : un engagement sans échéance n'est pas consigné, il est oublié par avance, et personne ne vient le chercher.
+
+**Régénérer la grille.** `node outils/faire-acceptation.mjs`. Elle recalcule ses bornes depuis le dossier et reprend l'échéance du dernier engagement en attente. Si un salaire, un plancher ou une date a bougé, la grille suit ; sinon elle le dit et n'écrit rien.
+
+Tu n'as pas à te demander si c'est nécessaire : `node outils/verif-acceptation.mjs` refuse une grille périmée et nomme la borne qui a bougé.
+
+**Ne régénère jamais les textes.** L'emoji, le verdict, le commentaire, l'action et la phrase sont éditoriaux, le générateur les conserve. S'ils doivent changer, c'est une décision prise à froid, pas la conséquence d'un calcul.
 
 ---
 

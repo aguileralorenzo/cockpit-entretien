@@ -1,0 +1,76 @@
+{
+  "_doc": "Ce que vaut chaque reponse possible, decide A FROID avant qu'elle ne tombe. Les montants sont des HAUSSES MENSUELLES BRUTES, pas des salaires, parce que c'est dans cette grandeur qu'une reponse s'annonce. Les pourcentages ne sont stockes nulle part, ils sont recalcules a l'affichage depuis la base.",
+  "_pourquoi": "Le jour ou la reponse arrive, elle arrive avec son contexte : le ton de la personne en face, la fatigue, l'envie d'en finir. Une grille ecrite a froid ne se renegocie pas dans ce moment-la. C'est la difference entre savoir ce qu'on veut et le decouvrir en l'entendant.",
+  "_comment": "Les paliers sont PRODUITS par outils/faire-acceptation.mjs des que tes montants sont renseignes dans data/negociation.json. Les textes ci-dessous, eux, t'appartiennent : relis-les, reecris-les avec tes mots, le generateur les conserve. Un emoji qui ne correspond pas a ce que tu ressentirais vraiment ne sert a rien.",
+  "base_mensuelle": null,
+  "source_base": "negociation.montants.actuel",
+  "attendu_le": null,
+  "source_attendu": null,
+  "paliers": [],
+  "textes": [
+    {
+      "id": "p0",
+      "emoji": "😠",
+      "verdict": "Refus sec",
+      "commentaire": "Rien du tout. Si une promesse ecrite existe et n'a pas ete honoree, c'est un second manquement qui s'ajoute au premier.",
+      "action": "Ne pas discuter le montant, demander le motif par ecrit et une date de reexamen. Ne rien signer.",
+      "phrase": "J'entends. Je te demande de me l'ecrire, avec le motif, et de me dire a quelle date on rouvre le sujet."
+    },
+    {
+      "id": "p1",
+      "emoji": "😞",
+      "verdict": "Sous la moyenne annoncee",
+      "commentaire": "En dessous de la moyenne que l'employeur a lui-meme annoncee. Une appreciation presentee comme superieure a la moyenne et payee en dessous se contredit toute seule.",
+      "action": "Ne rien accepter a chaud. Faire nommer ce qui distingue ton appreciation de la moyenne.",
+      "phrase": "Tu m'as dit que la moyenne etait de tel niveau et que mon appreciation etait au-dessus. La, je suis en dessous de la moyenne. Qu'est-ce qui explique l'ecart ?"
+    },
+    {
+      "id": "p2",
+      "emoji": "😕",
+      "verdict": "La moyenne, pas plus",
+      "commentaire": "Au niveau de la moyenne, mais toujours sous ce que tu as reellement percu au dernier cycle. Ce qui etait du au titre du passe n'est meme pas entame.",
+      "action": "Qualifier comme insuffisant sans le rejeter, et demander un calendrier en deux temps plutot qu'un montant unique.",
+      "phrase": "C'est la moyenne. Ce que je pose n'est pas une augmentation ordinaire, c'est un rattrapage sur un engagement ecrit. Comment on traite cette partie-la ?"
+    },
+    {
+      "id": "p3",
+      "emoji": "😐",
+      "verdict": "Mieux que le dernier cycle, l'engagement reste ouvert",
+      "commentaire": "Tu depasses ce que tu as eu la derniere fois, mais l'engagement n'est pas solde, meme dans sa lecture la plus basse.",
+      "action": "Accepter comme PREMIER PALIER seulement, jamais comme solde de tout compte, et avec une deuxieme date ecrite.",
+      "phrase": "Je le prends comme un premier palier. Il manque encore pour solder le sujet, on met quelle date sur le second ?"
+    },
+    {
+      "id": "p4",
+      "emoji": "🙂",
+      "verdict": "L'engagement solde, en lecture basse",
+      "commentaire": "Ton plancher absolu. Ce qui avait ete promis est honore dans sa lecture la plus basse, mais rien n'est encore verse au titre de l'annee en cours.",
+      "action": "Accepter sous condition que la cloture des objectifs echus soit ecrite, et que l'annee en cours reste ouverte.",
+      "phrase": "Sur le passe on est bon, je te demande de l'acter par ecrit. Il reste l'annee en cours, on en parle quand ?"
+    },
+    {
+      "id": "p5",
+      "emoji": "😊",
+      "verdict": "L'engagement solde en haut, plus une part de l'annee",
+      "commentaire": "Ton plancher de repli. L'engagement est honore dans sa lecture haute, et une part de l'annee en cours est reconnue.",
+      "action": "Accepter, et enchainer sur le calendrier de classification pendant que la conversation est bonne.",
+      "phrase": "Ca me va. Pendant qu'on y est, on pose quelle date sur le changement de classification ?"
+    },
+    {
+      "id": "p6",
+      "emoji": "😃",
+      "verdict": "Ta cible",
+      "commentaire": "Le rattrapage complet et l'essentiel de ce que tu demandes au titre de l'annee en cours. C'est le resultat que tu visais en entrant.",
+      "action": "Accepter, faire confirmer la date d'effet par ecrit, et ne pas surjouer.",
+      "phrase": "Tres bien, merci. On met quelle date d'effet ?"
+    },
+    {
+      "id": "p7",
+      "emoji": "🎯",
+      "verdict": "Ta demande, entiere",
+      "commentaire": "Le montant que tu as annonce, sans rabais. Rien a ajouter.",
+      "action": "Accepter, remercier, et faire ecrire la date d'effet avant de sortir.",
+      "phrase": "Merci, c'est exactement ce que j'avais pose. Date d'effet ?"
+    }
+  ]
+}
