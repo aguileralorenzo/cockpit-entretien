@@ -1,180 +1,181 @@
 {
-  "_doc": "Les situations de l'exercice a choix. Chaque situation porte une replique du manager et trois ou quatre reponses possibles, une seule bonne. Les mauvaises portent le numero de la faute correspondante. AUCUN modele n'intervient : tout est ecrit ici, donc rien ne peut inventer un montant ni te conseiller une faute. Les sept situations fournies sont universelles et ne citent aucun montant. Le skill /demarrer en ajoute d'autres, calees sur ton dossier.",
-
+  "_doc": "Les situations de l'exercice a choix. Une replique du manager, trois ou quatre reponses, une seule bonne. Les mauvaises portent le numero de la faute correspondante. AUCUN modele n'intervient : tout est ecrit ici, donc rien ne peut inventer un montant ni te conseiller une faute.",
+  "_portee": "Les sept situations livrees sont UNIVERSELLES. Elles ne citent aucun montant et ne supposent rien de ta situation : ni promesse non tenue, ni objectif en retard, ni historique particulier. Seulement un entretien ou quelqu'un demande une augmentation. C'est ce qui les rend jouables des le premier jour, avant meme d'avoir rempli ton dossier.",
+  "_a_toi": "Le skill /demarrer en ajoute d'autres, calees sur ta situation. Ce sont celles-la qui citeront tes chiffres et tes pieces. Numerote-les a partir de d1, pour qu'elles restent distinctes des universelles.",
   "situations": [
     {
       "id": "s1",
       "titre": "L'ouverture",
-      "contexte": "Premiere minute. Il te laisse la main sur ton bilan. Ce que tu poses ici servira d'appui a ta demande dans dix minutes.",
+      "contexte": "Ce que tu poses ici servira d'appui a ta demande dans dix minutes.",
       "manager": "Alors, raconte-moi ton annee. Tu la vois comment ?",
       "options": [
         {
           "texte": "Tres bonne annee, je suis content de ce que j'ai fait.",
           "bon": false,
-          "pourquoi": "Un adjectif n'est pas un fait. Tu viens de rendre la main sans rien poser, et il va refermer le bilan."
+          "pourquoi": "Un ressenti ne se verifie pas, donc il ne pese rien. Faute 9."
         },
         {
-          "texte": "Bonne annee, et j'ai trois choses concretes a te montrer.",
+          "texte": "Bonne annee. J'ai trois choses concretes a te montrer.",
           "bon": true,
-          "pourquoi": "Court, affirmatif, et ca annonce une structure. Tu gardes la main et tu prepares le terrain de ta demande."
+          "pourquoi": "Tu annonces un nombre et tu t'engages a le tenir. La suite a un appui."
         },
         {
           "texte": "Franchement moyenne, j'aurais aime faire plus.",
           "bon": false,
-          "pourquoi": "Tu plaides contre toi avant qu'on te le demande. Faute 6, conceder sans y etre pousse."
+          "pourquoi": "Tu negocies contre toi avant d'avoir commence. Faute 6."
         }
       ]
     },
     {
       "id": "s2",
       "titre": "Il referme le bilan",
-      "contexte": "Il valide ton annee en deux phrases et veut passer a la suite. Si tu le laisses faire, tu amenes l'argent a froid.",
-      "manager": "Bon, sur l'evaluation on est alignes, je vais pas t'embeter avec ca. On enchaine sur les perspectives ?",
+      "contexte": "S'il passe a la suite, tu ameneras l'argent a froid.",
+      "manager": "Bon, sur l'evaluation on est alignes. On enchaine sur les perspectives ?",
       "options": [
         {
           "texte": "Oui, allons-y.",
           "bon": false,
-          "pourquoi": "Tu perds le seul moment ou tes faits pouvaient etre poses tranquillement. Faute 6."
+          "pourquoi": "Tu perds le seul moment ou tes faits se posent tranquillement. Faute 6."
         },
         {
-          "texte": "Avant les perspectives, trois points de l'an dernier ne sont pas cloturés. Je les nomme.",
+          "texte": "Avant les perspectives, il me reste deux points a poser. Je les nomme.",
           "bon": true,
-          "pourquoi": "Tu bloques la fermeture ET tu annonces que tu vas les nommer. Ne demande pas la permission, prends la parole."
+          "pourquoi": "Tu bloques la fermeture et tu annonces que tu vas les nommer. Ne demande pas la permission."
         },
         {
           "texte": "J'aurais quelques sujets a evoquer avant la fin, si tu veux bien.",
           "bon": false,
-          "pourquoi": "Deux faiblesses. Des sujets non nommes s'oublient, et avant la fin te renvoie au moment ou il regarde sa montre."
+          "pourquoi": "Des sujets non nommes s'oublient, et avant la fin te renvoie au moment ou il regarde sa montre."
         }
       ]
     },
     {
       "id": "s3",
       "titre": "Annoncer le montant",
-      "contexte": "Le moment ou tu poses ton chiffre. Ce que tu dis ici fixe le point de depart de toute la suite.",
+      "contexte": "Ce que tu dis ici fixe le point de depart de toute la suite.",
       "manager": "D'accord, j'entends. Tu demandes quoi, concretement ?",
       "options": [
         {
-          "texte": "Je vise une augmentation d'environ dix a douze pour cent.",
+          "texte": "Je vise une augmentation de l'ordre de dix pour cent.",
           "bon": false,
-          "pourquoi": "Deux fautes en une. Une fourchette, il entend le bas, faute 1. Et un pourcentage se discute, de quelle base, faute 2."
+          "pourquoi": "Un pourcentage ouvre un debat d'interpretation. Faute 2."
         },
         {
-          "texte": "Je demande le montant que j'ai prepare, en euros, decompose en deux parts, le rattrapage et l'annee ecoulee.",
+          "texte": "Je demande le montant que j'ai prepare, en euros, et je dis de quoi il est fait.",
           "bon": true,
-          "pourquoi": "Un seul chiffre, en euros, et une decomposition qui montre que ce n'est pas un nombre sorti du chapeau."
+          "pourquoi": "Un chiffre unique, decompose. Un nombre rond se discute, un nombre construit se defend."
         },
         {
-          "texte": "Ce serait bien d'arriver quelque part entre ce que j'ai et ce que je vise.",
+          "texte": "Quelque part entre ce que j'ai aujourd'hui et ce que je vise.",
           "bon": false,
-          "pourquoi": "Tu negocies contre toi avant qu'il ait dit un mot. Faute 6."
+          "pourquoi": "Une fourchette, et en face on entend toujours le bas. Faute 1."
         }
       ]
     },
     {
       "id": "s4",
       "titre": "Le mur sans motif",
-      "contexte": "Il refuse franchement, sans donner de raison. C'est la situation ou la reaction spontanee est la plus couteuse.",
+      "contexte": "Il refuse sans donner de raison. La reaction spontanee est la plus couteuse.",
       "manager": "Ecoute, franchement, on ne peut simplement pas faire ca.",
       "options": [
         {
           "texte": "Je pense que si, et je vais t'expliquer pourquoi.",
           "bon": false,
-          "pourquoi": "Contre-argumenter une position enoncee a voix haute la fige. Quelqu'un qui ne revient jamais sur un non ne reviendra pas sur celui-la."
+          "pourquoi": "Contre-argumenter le fige sur une position qu'il vient d'enoncer a voix haute."
         },
         {
-          "texte": "D'accord. Qu'est-ce qui bloque exactement, l'enveloppe, le coefficient, ou le calendrier ?",
+          "texte": "D'accord. Qu'est-ce qui bloque exactement, l'enveloppe, le niveau, ou le calendrier ?",
           "bon": true,
-          "pourquoi": "Tu acceptes la phrase sans accepter le resultat, et tu proposes trois portes nommees. Quelqu'un de sur de lui en choisit une, et chacune ouvre une sortie."
+          "pourquoi": "Tu acceptes la phrase sans accepter le resultat, et tu proposes des portes nommees."
         },
         {
           "texte": "Bon, tant pis. On verra l'an prochain.",
           "bon": false,
-          "pourquoi": "Faute 6. Un refus sans motif n'est pas un refus argumente, tu n'as aucune raison de le tenir pour definitif."
+          "pourquoi": "Tu concedes sans y etre pousse. Faute 6."
         },
         {
           "texte": "Si c'est non, je regarderai ailleurs.",
           "bon": false,
-          "pourquoi": "Faute 4. Si tu n'as rien prospecte, c'est un bluff et il s'entend. Et il peut te demander si tu as une offre."
+          "pourquoi": "Une menace sans rien de prospecte s'entend comme un bluff. Faute 4."
         }
       ]
     },
     {
       "id": "s5",
       "titre": "Le retour sans date",
-      "contexte": "Il ne dit pas non, il ne dit pas oui. C'est la facon la plus courante de sortir d'un entretien sans rien avoir obtenu.",
+      "contexte": "La facon la plus courante de sortir d'un entretien sans rien avoir obtenu.",
       "manager": "Ouais ouais, c'est note, je regarde et je reviens vers toi.",
       "options": [
         {
           "texte": "Tres bien, merci.",
           "bon": false,
-          "pourquoi": "Faute 7. Une promesse orale sans date n'est pas une promesse, c'est une facon polie de clore le sujet."
+          "pourquoi": "Une promesse orale sans date n'engage personne. Faute 7."
         },
         {
           "texte": "On dit quoi comme date ? Je te relance quand ?",
           "bon": true,
-          "pourquoi": "Court, factuel, impossible a refuser sans se donner tort. Une date transforme une intention en echeance."
+          "pourquoi": "Deux questions courtes, et la seconde rend le suivi normal plutot qu'insistant."
         },
         {
-          "texte": "J'espere que ca ne va pas trainer comme la derniere fois.",
+          "texte": "J'espere que ca ne va pas trainer.",
           "bon": false,
-          "pourquoi": "Faute 3, registre affectif. Le reproche te met en position de plaignant et n'obtient aucune date."
+          "pourquoi": "Le reproche remplace la date, et tu ressors sans date. Faute 3."
         }
       ]
     },
     {
       "id": "s6",
       "titre": "Une proposition en dessous",
-      "contexte": "Il propose un montant nettement inferieur au tien. Repondre a chaud est le piege, ne rien dire en est un autre.",
-      "manager": "Ce que je peux tenter, c'est beaucoup moins que ce que tu demandes. Ca, je pense pouvoir le faire passer.",
+      "contexte": "Repondre a chaud est le piege. Ne rien dire en est un autre.",
+      "manager": "Ce que je peux tenter, c'est nettement moins que ce que tu demandes. Ca, je pense pouvoir le faire passer.",
       "options": [
         {
           "texte": "D'accord, va pour ce montant.",
           "bon": false,
-          "pourquoi": "Faute 6. Tu acceptes la premiere contre-proposition, qui est par construction la plus basse qu'il puisse faire."
+          "pourquoi": "La faute la plus courante de tout l'exercice, et elle tient en quatre mots. Faute 6."
         },
         {
-          "texte": "Je te remercie, et je ne te reponds pas aujourd'hui. Mais je te le dis, ce montant ne solde pas ce qui a ete ecrit. Je prends ta reponse ferme a une date.",
+          "texte": "Merci. Je ne te reponds pas aujourd'hui. Tu me donnes ta reponse ferme a quelle date ?",
           "bon": true,
-          "pourquoi": "Tu qualifies l'offre sans la refuser ni l'accepter, et tu la mets en attente avec une echeance. Ne rien dire la ferait devenir la reference."
+          "pourquoi": "Tu ne refuses ni n'acceptes. Tu gagnes le seul temps qui compte, celui ou tu decides a froid."
         },
         {
           "texte": "C'est tres insuffisant, je suis decu.",
           "bon": false,
-          "pourquoi": "Faute 3. Le registre affectif appelle un je comprends et rien d'autre."
+          "pourquoi": "Le registre affectif lui donne un terrain ou tes faits ne servent plus. Faute 3."
         },
         {
-          "texte": "Bon, disons un montant entre les deux et on n'en parle plus.",
+          "texte": "Disons un montant entre les deux et on n'en parle plus.",
           "bon": false,
-          "pourquoi": "Faute 6, et tu inventes un chiffre qui n'est pas dans ton dossier, faute 5. Un montant qu'on baisse ne remonte jamais."
+          "pourquoi": "Tu negocies contre toi, et tu le fais le premier. Faute 6."
         }
       ]
     },
     {
       "id": "s7",
       "titre": "Pourquoi tu restes",
-      "contexte": "La question la plus revelatrice de l'entretien. Ta reponse lui dit combien ta demande lui coute de ne pas satisfaire.",
+      "contexte": "Ta reponse lui dit combien ta demande lui coute de ne pas satisfaire.",
       "manager": "Dis-moi, pourquoi tu restes chez nous, au fond ?",
       "options": [
         {
           "texte": "Je suis bien ici, l'ambiance est bonne, je ne cherche pas a partir.",
           "bon": false,
-          "pourquoi": "Tu viens de lui annoncer que tu resteras quoi qu'il decide. Ta demande ne lui coute plus rien."
+          "pourquoi": "Tu annonces que tu resteras de toute facon, et ta demande perd sa pression."
         },
         {
-          "texte": "Parce que j'ai investi ici, et que j'attends un retour sur cet investissement. C'est pour ca que je suis venu avec des chiffres et pas avec un ressenti.",
+          "texte": "Parce que j'ai investi ici et que j'attends un retour. C'est pour ca que je viens avec des faits.",
           "bon": true,
-          "pourquoi": "Tu retournes l'anciennete. Des annees investies sont une raison d'attendre un retour, pas une raison de rester a ce prix-la."
+          "pourquoi": "Tu retournes l'anciennete : elle devient une raison d'attendre, pas de rester a ce prix."
         },
         {
           "texte": "Bonne question, je me la pose justement.",
           "bon": false,
-          "pourquoi": "Faute 4 deguisee. Une menace sous-entendue sans rien derriere s'entend comme un bluff."
+          "pourquoi": "Une menace deguisee, donc un bluff tant que rien n'est prospecte. Faute 4."
         },
         {
-          "texte": "Parce que changer de boite demande du temps et de l'energie.",
+          "texte": "Parce que changer demande du temps et de l'energie.",
           "bon": false,
-          "pourquoi": "Honnete, et desastreux. Tu lui expliques que ton depart a un cout pour toi, donc qu'il n'a pas a le craindre."
+          "pourquoi": "Tu dis que partir te coute plus cher qu'a lui de te garder."
         }
       ]
     }

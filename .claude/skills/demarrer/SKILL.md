@@ -85,7 +85,9 @@ Ajoute-lui les siennes. Tout montant qu'il devra sortir sans hésiter mérite un
 
 `data/realisations.json`, `data/competences.json`, `data/cible.json`, `data/actions.json`, `data/engagements.json`. Ne force pas : mieux vaut trois réalisations sourcées que treize inventées.
 
-Propose d'ajouter deux ou trois situations d'entraînement propres au dossier, à la suite des sept universelles de `data/exercices.json`.
+Propose d'ajouter deux ou trois situations d'entraînement propres au dossier, à la suite des sept universelles de `data/exercices.json`. **Numérote-les à partir de `d1`**, pour qu'elles restent distinctes des universelles : ce sont les seules qui ont le droit de citer ses montants et ses pièces, et le contrôle du harnais s'appuie sur cette distinction.
+
+Les sept universelles, elles, ne supposent rien de sa situation. Ne les modifie pas pour les rapprocher de son cas, ajoute plutôt une situation à côté.
 
 ---
 
