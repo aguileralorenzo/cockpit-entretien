@@ -48,12 +48,15 @@ Claude vous demande les pièces à déposer dans `inbox/`, vous pose les questio
 
 ## Comment ça marche
 
+[![Schéma d'architecture de aguileralorenzo/cockpit-entretien](https://gitdiagram.com/aguileralorenzo/cockpit-entretien/diagram.png)](https://gitdiagram.com/aguileralorenzo/cockpit-entretien?utm_source=readme&utm_medium=picture)
+
 Les données vivent dans `data/*.json`, et c'est la **source de vérité unique**. L'interface les lit et les écrit, ces mêmes fichiers restent éditables à la main, et une modification faite d'un côté apparaît de l'autre au rafraîchissement.
 
 | Fichier | Contenu |
 | --- | --- |
 | `data/config.json` | Qui vous êtes, votre employeur, vos modules. Le seul endroit où le logiciel apprend votre contexte |
 | `data/profil.json` | Votre situation réelle, poste, classification, rémunération, contraintes |
+| `data/negociation.json` | Vos montants, et le **seul endroit** où ils existent. Un montant recopié finit par diverger |
 | `data/cible.json` | Les trajectoires visées, leurs prérequis, jalons et **coût réel** |
 | `data/actions.json` | Le plan d'action par horizon, et les habitudes hebdomadaires |
 | `data/competences.json` | Auto-évaluation sur une échelle de 0 à 5, avec la preuve de chaque niveau |
@@ -62,6 +65,9 @@ Les données vivent dans `data/*.json`, et c'est la **source de vérité unique*
 | `data/offres.json` | Les offres du marché relevées, avec leur fourchette **annoncée** |
 | `data/paie.json` | Vos bulletins, par liste blanche de champs, sans aucun identifiant |
 | `data/exercices.json` | Les situations de l'exercice à choix |
+| `data/chiffres.json` | Les questions du quiz. Des **pointeurs** vers votre dossier, jamais des réponses |
+| `data/echange.json` | Le canal de la répétition en direct. Un tampon, pas une archive |
+| `data/acceptation.json` | La grille d'acceptation. Bornes **produites**, textes éditoriaux |
 | `data/entrainement.json` | Vos scores, écrits par l'application |
 | `data/formulaire.json` | Les textes de votre formulaire d'entretien, d'un cycle à l'autre |
 | `data/discussions.json` | Les analyses produites au fil des pièces déposées |
