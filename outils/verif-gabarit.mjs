@@ -48,7 +48,24 @@ const UNIVERSELS = [
 const MONTANTS = [
   ['montant en euros', /\b\d{1,3}(?:[    ]\d{3})+(?:,\d{2})?\s*(?:€|EUR|euros)/],
   ['montant a quatre chiffres suivi d un symbole', /\b\d{4,6}(?:[.,]\d{2})?\s*(?:€|EUR\b)/],
+  // Sans symbole. Les deux motifs ci-dessus exigeaient un € ou un EUR, si bien
+  // qu'un montant ecrit seul dans un commentaire ou dans un tableau de test
+  // passait au travers. C'est arrive, et c'est la forme sous laquelle un
+  // montant se glisse le plus facilement dans du code.
+  //
+  // La negative derriere ecarte le 400 de « HTTP/1.1 400 », ou le groupe de
+  // mille est precede d'un point ou d'une barre. Celle de devant ecarte le
+  // « 1 100 » de « flex: 1 1 100% » : un pourcentage n'est pas un salaire.
+  //
+  // Les deux sont etroites a dessein. Un controle qui crie a chaque lancement
+  // apprend a etre ignore, et c'est le moyen le plus sur de rater une vraie fuite.
+  ['montant sans symbole', /(?<![.\/\d])\b\d{1,3}[  ]\d{3}\b(?![\d%])/],
 ];
+
+// Un dessin n'a pas de salaire : les coordonnees d'un viewBox ressemblent a des
+// montants sans symbole, et les controler ne protegerait personne. Les autres
+// motifs, eux, continuent de s'appliquer aux images.
+const SANS_MONTANTS = /\.svg$/;
 
 /* -- parcours ----------------------------------------------------------------- */
 
@@ -100,7 +117,8 @@ for (const f of fichiers) {
   octets += info.size;
 
   if (f.rel === SOI) continue;
-  const motifs = [...UNIVERSELS, ...nominatifs, ...(EXEMPLES.has(f.rel) ? [] : MONTANTS)];
+  const sansMontants = EXEMPLES.has(f.rel) || SANS_MONTANTS.test(f.rel);
+  const motifs = [...UNIVERSELS, ...nominatifs, ...(sansMontants ? [] : MONTANTS)];
   for (const [quoi, motif] of motifs) {
     const m = texte.match(motif);
     if (!m) continue;

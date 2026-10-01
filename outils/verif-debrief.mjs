@@ -109,7 +109,8 @@ else {
 
 // toLocaleString('fr-FR') separe les milliers par une espace fine insecable,
 // U+202F, et pas par une espace ordinaire. Sans cette normalisation le motif
-// coupait « 3 550 » en « 550 » et signalait des montants inexistants.
+// coupait un montant a quatre chiffres en deux et signalait des montants
+// inexistants.
 const plat = (s) => s.replace(/[    ]/g, ' ').trim();
 
 // Les montants autorises viennent du dossier, pas d'une liste ecrite ici.
