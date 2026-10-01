@@ -48,7 +48,7 @@ Claude vous demande les pièces à déposer dans `inbox/`, vous pose les questio
 
 ## Comment ça marche
 
-[![Schéma d'architecture de aguileralorenzo/cockpit-entretien](https://gitdiagram.com/aguileralorenzo/cockpit-entretien/diagram.png)](https://gitdiagram.com/aguileralorenzo/cockpit-entretien?utm_source=readme&utm_medium=picture)
+[![Schéma d'architecture de aguileralorenzo/cockpit-entretien](docs/architecture.png)](https://gitdiagram.com/aguileralorenzo/cockpit-entretien?utm_source=readme&utm_medium=picture)
 
 Les données vivent dans `data/*.json`, et c'est la **source de vérité unique**. L'interface les lit et les écrit, ces mêmes fichiers restent éditables à la main, et une modification faite d'un côté apparaît de l'autre au rafraîchissement.
 
